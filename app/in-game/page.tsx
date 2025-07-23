@@ -109,6 +109,7 @@ export default function InGame() {
   const [activeNoda, setActiveNoda] = useState<number | null>(null);
   const sikatRef = useRef<HTMLDivElement>(null);
   const bajuRef = useRef<HTMLDivElement>(null);
+  const [availableItems, setAvailableItems] = useState(items);
 
   // Drag and drop logic
   const handleDragEnd = (event: MouseEvent | TouchEvent, itemKey: string) => {
@@ -124,6 +125,7 @@ export default function InGame() {
       dragRect.bottom > dropRect.top;
     if (isOver) {
       if (itemKey === steps[step].target) {
+        setAvailableItems((prev) => prev.filter((item) => item.key !== itemKey));
         if (step === 3) {
           setShowQuiz(true);
         } else {
@@ -257,7 +259,7 @@ export default function InGame() {
             </div>
             {/* Tools bar */}
             <div className="flex flex-row items-center justify-center gap-6 mt-4 w-full max-w-lg">
-              {items.map((item) => (
+              {availableItems.map((item) => (
                 <motion.div
                   key={item.key}
                   drag
@@ -272,6 +274,7 @@ export default function InGame() {
                     alt={item.alt}
                     width={item.width}
                     height={item.height}
+                    style={{ pointerEvents: "none" }}
                   />
                 </motion.div>
               ))}
