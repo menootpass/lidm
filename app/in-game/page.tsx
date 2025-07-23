@@ -1,7 +1,7 @@
 "use client"
 import Image from "next/image";
 import { useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 const items = [
   {
@@ -111,10 +111,12 @@ export default function InGame() {
   const bajuRef = useRef<HTMLDivElement>(null);
 
   // Drag and drop logic
-  const handleDragEnd = (event: any, itemKey: string) => {
+  const handleDragEnd = (event: MouseEvent | TouchEvent, itemKey: string) => {
     if (!dropRef.current) return;
+    const target = event.target as HTMLElement | null;
+    if (!target) return;
     const dropRect = dropRef.current.getBoundingClientRect();
-    const dragRect = event.target.getBoundingClientRect();
+    const dragRect = target.getBoundingClientRect();
     const isOver =
       dragRect.left < dropRect.right &&
       dragRect.right > dropRect.left &&
@@ -167,9 +169,11 @@ export default function InGame() {
   }
 
   // Drag sikat ke noda
-  const handleSikatDragEnd = (event: any) => {
+  const handleSikatDragEnd = (event: MouseEvent | TouchEvent) => {
     if (!bajuRef.current) return;
-    const sikatRect = event.target.getBoundingClientRect();
+    const target = event.target as HTMLElement | null;
+    if (!target) return;
+    const sikatRect = target.getBoundingClientRect();
     for (let i = 0; i < noda.length; i++) {
       if (!noda[i].visible) continue;
       const nodaEl = document.getElementById(`noda-${i}`);
