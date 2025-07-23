@@ -19,7 +19,7 @@ export default function Home() {
       {/* Content */}
       <div className="relative z-20 flex flex-col items-center justify-center w-full px-4">
         <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-white drop-shadow-lg text-center mb-8">
-          Selamat Datang di Game Seru Anak SD!
+          Selamat Datang di Game Eksperimen..!
         </h1>
         <button
           className="mt-4 px-10 py-4 rounded-full bg-yellow-400 hover:bg-yellow-300 text-2xl sm:text-3xl font-bold text-gray-900 shadow-lg transition-all focus:outline-none focus:ring-4 focus:ring-yellow-200"
