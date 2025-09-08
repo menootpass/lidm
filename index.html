@@ -85,6 +85,113 @@
         .action-icon:hover {
             transform: scale(1.1);
         }
+        
+        .action-icon:active {
+            transform: scale(0.95);
+            transition: transform 0.1s ease;
+        }
+        
+        .action-icon.washing {
+            animation: action-pulse 0.5s ease-in-out infinite;
+        }
+        
+        @keyframes action-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        /* Washing Animation Styles */
+        .bubble-animation {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: rgba(59, 130, 246, 0.6);
+            border-radius: 50%;
+            animation: bubble-rise 2s ease-in-out infinite;
+        }
+        
+        @keyframes bubble-rise {
+            0% {
+                transform: translateY(0) scale(0.5);
+                opacity: 0.8;
+            }
+            50% {
+                transform: translateY(-20px) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-40px) scale(0.3);
+                opacity: 0;
+            }
+        }
+        
+        .fabric-wash {
+            animation: fabric-shake 0.5s ease-in-out infinite;
+        }
+        
+        @keyframes fabric-shake {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            25% { transform: translateX(-2px) rotate(-1deg); }
+            75% { transform: translateX(2px) rotate(1deg); }
+        }
+        
+        .water-ripple {
+            animation: water-ripple 1s ease-in-out infinite;
+        }
+        
+        @keyframes water-ripple {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .stain-fade {
+            animation: stain-fade 1s ease-out forwards;
+        }
+        
+        @keyframes stain-fade {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0.3; transform: scale(0.8); }
+        }
+        
+        .splash-effect {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(59, 130, 246, 0.8);
+            border-radius: 50%;
+            animation: splash 0.6s ease-out forwards;
+        }
+        
+        @keyframes splash {
+            0% {
+                transform: scale(0) translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.5) translateY(-10px);
+                opacity: 0;
+            }
+        }
+        
+        .result-success {
+            animation: success-bounce 0.6s ease-out;
+        }
+        
+        @keyframes success-bounce {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .result-fail {
+            animation: fail-shake 0.5s ease-in-out;
+        }
+        
+        @keyframes fail-shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
     </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
@@ -712,9 +819,16 @@
             
             setTimeout(() => {
                 playSound('mix');
-                if (water) water.style.height = '60px';
+                if (water) {
+                    water.style.height = '60px';
+                    water.classList.add('water-ripple');
+                }
                 if (fabric) fabric.style.opacity = '1';
                 if (info) info.textContent = "Bahan sudah tercampur.";
+                
+                // Create initial bubbles when mixing
+                createBubbles();
+                createSplash();
             }, 500);
 
             setTimeout(() => {
@@ -727,11 +841,100 @@
         }
 
         let actionCount = 0;
+        let washingAnimation = null;
+        
+        function createBubbles() {
+            const bucket = document.querySelector('.relative.w-48.h-48');
+            if (!bucket) return;
+            
+            for (let i = 0; i < 5; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble-animation';
+                bubble.style.left = Math.random() * 40 + 30 + '%';
+                bubble.style.bottom = '20px';
+                bubble.style.animationDelay = Math.random() * 2 + 's';
+                bubble.style.animationDuration = (Math.random() * 1 + 1.5) + 's';
+                bucket.appendChild(bubble);
+                
+                // Remove bubble after animation
+                setTimeout(() => {
+                    if (bubble.parentNode) {
+                        bubble.parentNode.removeChild(bubble);
+                    }
+                }, 3000);
+            }
+        }
+        
+        function createSplash() {
+            const bucket = document.querySelector('.relative.w-48.h-48');
+            if (!bucket) return;
+            
+            for (let i = 0; i < 3; i++) {
+                const splash = document.createElement('div');
+                splash.className = 'splash-effect';
+                splash.style.left = Math.random() * 40 + 30 + '%';
+                splash.style.bottom = '30px';
+                splash.style.animationDelay = Math.random() * 0.5 + 's';
+                bucket.appendChild(splash);
+                
+                // Remove splash after animation
+                setTimeout(() => {
+                    if (splash.parentNode) {
+                        splash.parentNode.removeChild(splash);
+                    }
+                }, 1000);
+            }
+        }
+        
+        function startWashingAnimation() {
+            const fabric = document.getElementById('fabric-in-bucket');
+            if (fabric) {
+                fabric.classList.add('fabric-wash');
+            }
+            
+            const water = document.getElementById('water');
+            if (water) {
+                water.classList.add('water-ripple');
+            }
+            
+            // Create bubbles continuously
+            washingAnimation = setInterval(() => {
+                createBubbles();
+                createSplash();
+            }, 800);
+        }
+        
+        function stopWashingAnimation() {
+            const fabric = document.getElementById('fabric-in-bucket');
+            if (fabric) {
+                fabric.classList.remove('fabric-wash');
+            }
+            
+            const water = document.getElementById('water');
+            if (water) {
+                water.classList.remove('water-ripple');
+            }
+            
+            if (washingAnimation) {
+                clearInterval(washingAnimation);
+                washingAnimation = null;
+            }
+        }
+        
         function performAction(action) {
             if (action === 'kucek') playSound('kucek');
             if (action === 'sikat') playSound('sikat');
 
             actionCount++;
+            
+            // Add washing animation to action buttons
+            const kucekBtn = document.getElementById('action-kucek');
+            const sikatBtn = document.getElementById('action-sikat');
+            if (action === 'kucek' && kucekBtn) kucekBtn.classList.add('washing');
+            if (action === 'sikat' && sikatBtn) sikatBtn.classList.add('washing');
+            
+            // Start washing animation
+            startWashingAnimation();
             
             // Save progress after each action
             saveProgress();
@@ -740,11 +943,23 @@
             if (stain) {
                 let currentOpacity = parseFloat(stain.style.opacity) || 1.0;
                 stain.style.opacity = currentOpacity * 0.8;
+                
+                // Add stain fade animation
+                stain.classList.add('stain-fade');
+                setTimeout(() => {
+                    stain.classList.remove('stain-fade');
+                }, 1000);
             }
 
+            // Stop animation after 1 second
+            setTimeout(() => {
+                stopWashingAnimation();
+                // Remove washing animation from buttons
+                if (kucekBtn) kucekBtn.classList.remove('washing');
+                if (sikatBtn) sikatBtn.classList.remove('washing');
+            }, 1000);
+
             if (actionCount >= 2) {
-                const kucekBtn = document.getElementById('action-kucek');
-                const sikatBtn = document.getElementById('action-sikat');
                 const info = document.getElementById('experiment-info');
                 
                 if (kucekBtn) kucekBtn.disabled = true;
@@ -766,6 +981,7 @@
             const statusEl = document.getElementById('result-status');
             const explanationEl = document.getElementById('result-explanation');
             const stainEl = document.getElementById('result-stain');
+            const resultCard = document.getElementById('result-card');
             
             if (methodEl) methodEl.textContent = resultData.method;
             if (statusEl) {
@@ -775,7 +991,20 @@
             if (explanationEl) explanationEl.textContent = resultData.explanation;
             if (stainEl) stainEl.style.opacity = resultData.stainOpacity;
             
-            if (resultData.stainOpacity === 0) playSound('success');
+            // Add animation based on result
+            if (resultCard) {
+                if (resultData.stainOpacity === 0) {
+                    resultCard.classList.add('result-success');
+                    playSound('success');
+                } else {
+                    resultCard.classList.add('result-fail');
+                }
+                
+                // Remove animation class after animation completes
+                setTimeout(() => {
+                    resultCard.classList.remove('result-success', 'result-fail');
+                }, 1000);
+            }
 
             showPage('page-7');
         }
