@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kimia Sehari-hari: Eksperimen Membersihkan Noda</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F0F4F8; /* Neutral background */
+        }
+        .game-container {
+            max-width: 420px;
+            height: 100vh;
+            max-height: 800px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: flex;
+        }
+        .btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .option-btn {
+            border: 2px solid #D9E2EC;
+        }
+        .option-btn:hover {
+            border-color: #60A5FA; /* Blue accent */
+            background-color: #EFF6FF;
+        }
+        .option-btn.selected {
+            border-color: #34D399; /* Green accent */
+            background-color: #F0FDF4;
+        }
+        .bubble {
+            background-color: white;
+            border-radius: 20px;
+            padding: 16px;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .bubble::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 20%;
+            width: 0;
+            height: 0;
+            border: 15px solid transparent;
+            border-top-color: white;
+            border-bottom: 0;
+            margin-left: -15px;
+            margin-bottom: -15px;
+        }
+        .stain-animation {
+            transition: opacity 1.5s ease-out;
+        }
+        .stain-hidden {
+            opacity: 0;
+        }
+        .ingredient-card {
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            border: 2px solid transparent;
+        }
+        .ingredient-card:hover, .ingredient-card.selected {
+             transform: scale(1.05);
+             border-color: #60A5FA;
+        }
+        .action-icon {
+             transition: transform 0.2s ease;
+        }
+        .action-icon:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen" onload="setTimeout(runIntroSequence, 100)">
+
+    <div id="gameContainer" class="game-container relative w-full bg-white flex flex-col overflow-hidden">
+
+        <!-- Page 1: Intro 1 -->
+        <div id="page-1" class="page active flex-col justify-center items-center h-full p-8 text-center">
+            <div class="character-container mb-6">
+                <!-- Character SVG -->
+                <svg width="150" height="150" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="100" cy="100" r="100" fill="#D9E2EC"/>
+                    <path d="M100 130C127.614 130 150 116.569 150 100C150 83.4315 127.614 70 100 70C72.3858 70 50 83.4315 50 100C50 116.569 72.3858 130 100 130Z" fill="#60A5FA"/>
+                    <circle cx="100" cy="100" r="60" fill="#F0F4F8"/>
+                    <circle cx="85" cy="90" r="5" fill="#4B5563"/>
+                    <circle cx="115" cy="90" r="5" fill="#4B5563"/>
+                    <path d="M90 110C92.7614 115 107.239 115 110 110" stroke="#4B5563" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div class="bubble w-full max-w-sm">
+                <p id="bubble-text-1" class="text-gray-700 text-lg">Halo! Bagaimana kabarnya?</p>
+            </div>
+            <!-- Fallback button if auto doesn't work -->
+            <button id="manual-start" onclick="showPage('page-2')" class="mt-4 btn bg-blue-500 text-white font-bold py-2 px-6 rounded-full shadow-lg" style="display: none;">Mulai Game</button>
+        </div>
+
+        <!-- Page 2: Intro 2 -->
+        <div id="page-2" class="page flex-col justify-center items-center h-full p-8 text-center">
+             <div class="character-container mb-6">
+                <svg width="150" height="150" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="100" fill="#D9E2EC"/><path d="M100 130C127.614 130 150 116.569 150 100C150 83.4315 127.614 70 100 70C72.3858 70 50 83.4315 50 100C50 116.569 72.3858 130 100 130Z" fill="#60A5FA"/><circle cx="100" cy="100" r="60" fill="#F0F4F8"/><circle cx="85" cy="90" r="5" fill="#4B5563"/><circle cx="115" cy="90" r="5" fill="#4B5563"/><path d="M90 110C92.7614 115 107.239 115 110 110" stroke="#4B5563" stroke-width="3" stroke-linecap="round"/></svg>
+            </div>
+            <div class="bubble w-full max-w-sm mb-8">
+                <p class="text-gray-700 text-lg">Sudah siap belajar sains?</p>
+            </div>
+            <button onclick="playSound('click'); showPage('page-3')" class="btn bg-blue-500 text-white font-bold py-3 px-8 rounded-full shadow-lg">Yuk, lanjut!</button>
+        </div>
+
+        <!-- Page 3: Question 1 -->
+        <div id="page-3" class="page flex-col justify-center items-center h-full p-8 text-center">
+             <div class="character-container mb-6">
+                <svg width="150" height="150" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="100" fill="#D9E2EC"/><path d="M100 130C127.614 130 150 116.569 150 100C150 83.4315 127.614 70 100 70C72.3858 70 50 83.4315 50 100C50 116.569 72.3858 130 100 130Z" fill="#60A5FA"/><circle cx="100" cy="100" r="60" fill="#F0F4F8"/><circle cx="85" cy="90" r="5" fill="#4B5563"/><circle cx="115" cy="90" r="5" fill="#4B5563"/><path d="M95 108C98 108 102 108 105 108" stroke="#4B5563" stroke-width="3" stroke-linecap="round"/></svg>
+            </div>
+            <div class="board bg-white p-6 rounded-lg shadow-md w-full max-w-sm mb-6">
+                <p class="text-gray-800 text-xl font-semibold">Pernahkah kamu mencuci baju?</p>
+            </div>
+            <div class="options-container w-full max-w-sm space-y-3">
+                <button onclick="playSound('click'); showPage('page-4')" class="option-btn w-full bg-white text-gray-700 font-semibold py-3 px-4 rounded-lg">Pernah dong!</button>
+                <button onclick="playSound('click'); showPage('page-4')" class="option-btn w-full bg-white text-gray-700 font-semibold py-3 px-4 rounded-lg">Belum pernah nih</button>
+            </div>
+        </div>
+        
+        <!-- Page 4: Question 2 -->
+        <div id="page-4" class="page flex-col justify-center items-center h-full p-6 text-center">
+             <div class="image-container bg-gray-200 rounded-lg w-64 h-64 mb-4 flex items-center justify-center relative overflow-hidden">
+                <!-- Fabric SVG -->
+                <svg class="absolute w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="100" height="100" fill="#EBF4FF"/>
+                    <line x1="10" y1="0" x2="10" y2="100" stroke="#D1E3FF" stroke-width="2"/>
+                    <line x1="30" y1="0" x2="30" y2="100" stroke="#D1E3FF" stroke-width="2"/>
+                    <line x1="50" y1="0" x2="50" y2="100" stroke="#D1E3FF" stroke-width="2"/>
+                    <line x1="70" y1="0" x2="70" y2="100" stroke="#D1E3FF" stroke-width="2"/>
+                    <line x1="90" y1="0" x2="90" y2="100" stroke="#D1E3FF" stroke-width="2"/>
+                    <line x1="0" y1="10" x2="100" y2="10" stroke="#D1E3FF" stroke-width="2"/>
+                    <line x1="0" y1="30" x2="100" y2="30" stroke="#D1E3FF" stroke-width="2"/>
+                    <line x1="0" y1="50" x2="100" y2="50" stroke="#D1E3FF" stroke-width="2"/>
+                    <line x1="0" y1="70" x2="100" y2="70" stroke="#D1E3FF" stroke-width="2"/>
+                    <line x1="0" y1="90" x2="100" y2="90" stroke="#D1E3FF" stroke-width="2"/>
+                </svg>
+                <!-- Stain SVG -->
+                <svg id="stain-1" class="absolute w-24 h-24 text-brown-500 stain-animation" viewBox="0 0 100 100" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M50 0C77.6142 0 100 22.3858 100 50C100 77.6142 77.6142 100 50 100C22.3858 100 0 77.6142 0 50C0 22.3858 22.3858 0 50 0ZM45.8569 16.8519C49.8143 14.8055 54.1857 14.8055 58.1431 16.8519C62.1005 18.8983 65.1945 22.8426 66.8519 27.1481C68.8983 31.1055 68.8983 35.8945 66.8519 39.8519C65.1945 44.1574 62.1005 48.1017 58.1431 50.1481C54.1857 52.1945 49.8143 52.1945 45.8569 50.1481C41.8995 48.1017 38.8055 44.1574 37.1481 39.8519C35.1017 35.8945 35.1017 31.1055 37.1481 27.1481C38.8055 22.8426 41.8995 18.8983 45.8569 16.8519Z" transform="translate(-10, 20) scale(1.2)" fill="#78350F"/>
+                     <path d="M72.5 60.5C67.5 58.5 60 55 55 59C50 63 51 69 54.5 72.5C58 76 66 79.5 71 76C76 72.5 77.5 62.5 72.5 60.5Z" fill="#A16207"/>
+                </svg>
+            </div>
+            <div class="bubble w-full max-w-sm mb-4">
+                <p class="text-gray-700 text-base">Kalau mencuci baju dengan noda membandel pakai apa nih?</p>
+            </div>
+             <div id="q2-options" class="options-container w-full max-w-sm grid grid-cols-2 gap-2 text-sm">
+                <button onclick="selectOption(this)" data-correct="false" class="option-btn bg-white text-gray-700 font-semibold py-2 px-3 rounded-lg">Deterjen</button>
+                <button onclick="selectOption(this)" data-correct="false" class="option-btn bg-white text-gray-700 font-semibold py-2 px-3 rounded-lg">Air</button>
+                <button onclick="selectOption(this)" data-correct="true" class="option-btn bg-white text-gray-700 font-semibold py-2 px-3 rounded-lg">Baking soda</button>
+                <button onclick="selectOption(this)" data-correct="true" class="option-btn bg-white text-gray-700 font-semibold py-2 px-3 rounded-lg">Cuka</button>
+                <button onclick="selectOption(this)" data-correct="false" class="option-btn bg-white text-gray-700 font-semibold py-2 px-3 rounded-lg">Air Gula</button>
+                <button onclick="selectOption(this)" data-correct="false" class="option-btn bg-white text-gray-700 font-semibold py-2 px-3 rounded-lg">Air Tanah</button>
+            </div>
+            <button id="q2-submit" onclick="checkAnswerQ2()" class="mt-4 btn bg-green-500 text-white font-bold py-2 px-6 rounded-full shadow-lg opacity-50" disabled>Cek Jawaban</button>
+        </div>
+
+        <!-- Page 5: Info -->
+        <div id="page-5" class="page flex-col justify-center items-center h-full p-8 text-center bg-blue-50">
+             <div class="icon-container mb-4 text-green-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            </div>
+            <h2 class="text-xl font-bold text-gray-800 mb-2">Jawaban yang Tepat: Baking Soda + Cuka</h2>
+            <div class="bg-white p-4 rounded-lg shadow-inner text-left max-w-sm w-full">
+                <p class="text-gray-600"><strong class="text-blue-600">Baking soda</strong> adalah basa lemah yang membantu melarutkan noda berbasis minyak dan mengurangi bau.</p>
+                <p class="text-gray-600 mt-2"><strong class="text-green-600">Cuka</strong> adalah asam lemah yang bisa melarutkan kerak mineral dan bereaksi dengan basa.</p>
+            </div>
+            <button onclick="playSound('click'); showPage('page-6')" class="mt-8 btn bg-blue-500 text-white font-bold py-3 px-8 rounded-full shadow-lg">Yuk, coba kita praktekkan!</button>
+        </div>
+        
+        <!-- Page 6: Experiment -->
+        <div id="page-6" class="page flex-col justify-between h-full p-4">
+            <h2 class="text-xl font-bold text-center text-gray-800">Pilih Metode Cucimu!</h2>
+            <div class="experiment-area flex-grow flex flex-col items-center justify-center my-2">
+                <!-- Bucket and Fabric -->
+                <div class="relative w-48 h-48">
+                     <!-- Bucket -->
+                    <svg class="w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 20 H90 L80 90 H20 Z" fill="#D9E2EC"/>
+                        <rect x="8" y="15" width="84" height="10" rx="5" fill="#B0C4DE"/>
+                    </svg>
+                     <!-- Water -->
+                    <div id="water" class="absolute bottom-[13px] left-[22px] w-[56px] h-0 bg-blue-300 rounded-b-lg transition-all duration-1000"></div>
+                     <!-- Fabric in bucket -->
+                    <div id="fabric-in-bucket" class="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity">
+                         <div class="relative w-24 h-24">
+                            <svg class="absolute w-full h-full opacity-50" viewBox="0 0 100 100" fill="#EBF4FF" xmlns="http://www.w3.org/2000/svg"><path d="M10,10 C40,0 60,0 90,10 L90,90 C60,100 40,100 10,90 Z"/></svg>
+                            <svg id="stain-2" class="absolute w-10 h-10 top-8 left-8 text-brown-500 stain-animation" viewBox="0 0 100 100" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M50 0C77.6142 0 100 22.3858 100 50C100 77.6142 77.6142 100 50 100C22.3858 100 0 77.6142 0 50C0 22.3858 22.3858 0 50 0Z" fill="#78350F"/></svg>
+                        </div>
+                    </div>
+                     <!-- Bubbles -->
+                    <div id="bubbles" class="absolute bottom-[13px] left-[22px] w-[56px] h-0 opacity-0 transition-all duration-1000"></div>
+                </div>
+                 <p id="experiment-info" class="mt-2 text-gray-600 text-sm h-10 text-center"></p>
+            </div>
+            <div class="options bg-gray-50 p-3 rounded-lg">
+                <div class="grid grid-cols-3 gap-2 mb-3">
+                     <button onclick="runExperiment('deterjen')" class="option-btn text-xs bg-white text-gray-700 font-semibold p-2 rounded-lg text-center">Cuci dengan<br>Deterjen</button>
+                     <button onclick="runExperiment('baking_soda_cuka')" class="option-btn text-xs bg-white text-gray-700 font-semibold p-2 rounded-lg text-center">Cuci dengan<br>Baking Soda + Cuka</button>
+                     <button onclick="runExperiment('semua')" class="option-btn text-xs bg-white text-gray-700 font-semibold p-2 rounded-lg text-center">Cuci dengan<br>Semua Bahan</button>
+                </div>
+                <div class="extra-actions flex justify-center gap-4">
+                    <button id="action-kucek" onclick="performAction('kucek')" class="action-icon p-3 bg-white rounded-full shadow disabled:opacity-50" disabled>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                    </button>
+                     <button id="action-sikat" onclick="performAction('sikat')" class="action-icon p-3 bg-white rounded-full shadow disabled:opacity-50" disabled>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" /></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Page 7: Results -->
+        <div id="page-7" class="page flex-col justify-center items-center h-full p-6 bg-gray-50">
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-4">Hasil Eksperimen</h2>
+            <div id="result-card" class="bg-white p-5 rounded-lg shadow-lg w-full max-w-sm">
+                <h3 id="result-method" class="text-lg font-bold text-blue-600"></h3>
+                <p id="result-status" class="text-md font-semibold my-2"></p>
+                <div class="result-image w-full h-32 bg-gray-100 rounded my-3 flex items-center justify-center relative overflow-hidden">
+                    <svg class="absolute w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"> <rect width="100" height="100" fill="#EBF4FF"/> <line x1="10" y1="0" x2="10" y2="100" stroke="#D1E3FF" stroke-width="1"/><line x1="20" y1="0" x2="20" y2="100" stroke="#D1E3FF" stroke-width="1"/><line x1="30" y1="0" x2="30" y2="100" stroke="#D1E3FF" stroke-width="1"/><line x1="40" y1="0" x2="40" y2="100" stroke="#D1E3FF" stroke-width="1"/><line x1="50" y1="0" x2="50" y2="100" stroke="#D1E3FF" stroke-width="1"/><line x1="60" y1="0" x2="60" y2="100" stroke="#D1E3FF" stroke-width="1"/><line x1="70" y1="0" x2="70" y2="100" stroke="#D1E3FF" stroke-width="1"/><line x1="80" y1="0" x2="80" y2="100" stroke="#D1E3FF" stroke-width="1"/><line x1="90" y1="0" x2="90" y2="100" stroke="#D1E3FF" stroke-width="1"/> <line x1="0" y1="10" x2="100" y2="10" stroke="#D1E3FF" stroke-width="1"/><line x1="0" y1="20" x2="100" y2="20" stroke="#D1E3FF" stroke-width="1"/><line x1="0" y1="30" x2="100" y2="30" stroke="#D1E3FF" stroke-width="1"/><line x1="0" y1="40" x2="100" y2="40" stroke="#D1E3FF" stroke-width="1"/><line x1="0" y1="50" x2="100" y2="50" stroke="#D1E3FF" stroke-width="1"/><line x1="0" y1="60" x2="100" y2="60" stroke="#D1E3FF" stroke-width="1"/><line x1="0" y1="70" x2="100" y2="70" stroke="#D1E3FF" stroke-width="1"/><line x1="0" y1="80" x2="100" y2="80" stroke="#D1E3FF" stroke-width="1"/><line x1="0" y1="90" x2="100" y2="90" stroke="#D1E3FF" stroke-width="1"/> </svg>
+                    <svg id="result-stain" class="absolute w-16 h-16 text-brown-500 transition-opacity duration-500" viewBox="0 0 100 100" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M50 0C77.6142 0 100 22.3858 100 50C100 77.6142 77.6142 100 50 100C22.3858 100 0 77.6142 0 50C0 22.3858 22.3858 0 50 0Z" fill="#78350F" fill-opacity="0.5"/></svg>
+                </div>
+                <p id="result-explanation" class="text-sm text-gray-600"></p>
+            </div>
+            <button onclick="playSound('click'); showPage('page-8')" class="mt-6 btn bg-blue-500 text-white font-bold py-2 px-6 rounded-full shadow-lg">Lihat Kesimpulan</button>
+        </div>
+
+        <!-- Page 8: Summary -->
+        <div id="page-8" class="page flex-col justify-center items-center h-full p-8 text-center bg-green-50">
+            <div class="icon-container mb-4 text-green-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            </div>
+            <h2 class="text-xl font-bold text-gray-800 mb-2">Kesimpulan</h2>
+            <div class="bg-white p-4 rounded-lg shadow-inner max-w-sm w-full">
+                <p class="text-gray-700">Penggunaan bahan kimia yang tepat dapat mempermudah pekerjaan kita. Tapi ingat, penggunaan berlebihan atau salah justru bisa merugikan diri sendiri dan lingkungan.</p>
+            </div>
+            <button onclick="playSound('click'); showPage('page-9')" class="mt-8 btn bg-green-500 text-white font-bold py-3 px-8 rounded-full shadow-lg">Fakta Menarik!</button>
+        </div>
+
+        <!-- Page 9: Final Info -->
+         <div id="page-9" class="page flex-col justify-center items-center h-full p-8 text-center bg-blue-50">
+            <div class="icon-container mb-4 text-blue-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.24a2 2 0 00-1.806.547a2 2 0 00-.547 1.806l.477 2.387a6 6 0 00.517 3.86l.158.318a6 6 0 00.517 3.86l2.387.477a2 2 0 001.806-.547a2 2 0 00.547-1.806l-.477-2.387a6 6 0 00-.517-3.86l-.158-.318a6 6 0 00-.517-3.86l-2.387-.477zM12 2c-5.523 0-10 4.477-10 10s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2z" /></svg>
+            </div>
+            <h2 class="text-xl font-bold text-gray-800 mb-2">Info Lingkungan</h2>
+            <div class="bg-white p-4 rounded-lg shadow-inner max-w-sm w-full">
+                <p class="text-gray-700">Air bekas <strong class="text-green-600">baking soda & cuka</strong> relatif aman bagi tanah. Namun, air bekas <strong class="text-red-500">deterjen</strong> mengandung surfaktan sintetis yang dapat mencemari sumber air jika dibuang sembarangan.</p>
+            </div>
+            <button onclick="playSound('click'); showPage('page-10')" class="mt-8 btn bg-blue-500 text-white font-bold py-3 px-8 rounded-full shadow-lg">Selesai!</button>
+        </div>
+
+        <!-- Page 10: Ending -->
+        <div id="page-10" class="page flex-col justify-center items-center h-full p-8 text-center">
+            <div class="icon-container mb-4 text-yellow-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
+            </div>
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">Good Job!</h1>
+            <button onclick="playSound('click'); restartGame()" class="btn bg-gray-600 text-white font-bold py-3 px-8 rounded-full shadow-lg">Ulangi Permainan</button>
+        </div>
+
+    </div>
+
+    <script>
+        let currentPage = 'page-1';
+        let selectedAnswersQ2 = [];
+        let synth;
+
+        // Initialize sound synth on the first user interaction
+        function initSound() {
+            if (!synth) {
+                synth = new Tone.Synth().toDestination();
+                // Play a silent note to "warm up" the audio context
+                Tone.start();
+                console.log("Audio Context Started");
+            }
+        }
+        
+        // --- Sound Effects ---
+        const sounds = {
+            click: () => synth.triggerAttackRelease("C5", "8n"),
+            mix: () => {
+                const noise = new Tone.Noise("pink").start();
+                const filter = new Tone.AutoFilter("4n").toDestination().start();
+                noise.connect(filter);
+                setTimeout(() => noise.stop(), 500);
+            },
+            kucek: () => {
+                 const noise = new Tone.Noise("white").toDestination();
+                 const env = new Tone.AmplitudeEnvelope({
+                    attack: 0.01,
+                    decay: 0.1,
+                    sustain: 0,
+                }).connect(noise.destination);
+                 noise.start();
+                 env.triggerAttack();
+                 setTimeout(() => noise.stop(), 150);
+            },
+            sikat: () => {
+                 const noise = new Tone.Noise("brown").toDestination();
+                 const env = new Tone.AmplitudeEnvelope({
+                    attack: 0.01,
+                    decay: 0.05,
+                    sustain: 0,
+                }).connect(noise.destination);
+                 noise.start();
+                 env.triggerAttack();
+                 setTimeout(() => noise.stop(), 100);
+            },
+            correct: () => synth.triggerAttackRelease("G5", "8n"),
+            wrong: () => synth.triggerAttackRelease("C3", "8n"),
+            success: () => {
+                 synth.triggerAttackRelease("C5", "8n", Tone.now());
+                 synth.triggerAttackRelease("E5", "8n", Tone.now() + 0.2);
+                 synth.triggerAttackRelease("G5", "8n", Tone.now() + 0.4);
+            }
+        };
+
+        function playSound(soundName) {
+            if (sounds[soundName] && typeof Tone !== 'undefined' && Tone.context.state === 'running') {
+                sounds[soundName]();
+            }
+        }
+
+        // --- Page Navigation ---
+        function showPage(pageId) {
+            console.log("Switching to page:", pageId);
+            
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show target page
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+                currentPage = pageId;
+                console.log("Successfully switched to page:", pageId);
+            } else {
+                console.error('Page not found:', pageId);
+            }
+        }
+
+        // --- Game Logic ---
+
+        // Typing effect for intro
+        async function runIntroSequence() {
+            try {
+                console.log("Starting intro sequence...");
+                const bubbleElement = document.getElementById('bubble-text-1');
+                if (!bubbleElement) {
+                    console.error("Bubble element not found!");
+                    // Fallback: just go to page 2
+                    setTimeout(() => showPage('page-2'), 1000);
+                    return;
+                }
+                
+                const bubbleText = ["Halo! Bagaimana kabarnya?", "Selamat datang di Eksperimen Kimia!"];
+                const sleep = (ms) => new Promise(res => setTimeout(res, ms));
+
+                const typeSentence = async (sentence) => {
+                    console.log("Typing:", sentence);
+                    if (bubbleElement) {
+                        bubbleElement.textContent = '';
+                        for (let i = 0; i < sentence.length; i++) {
+                            bubbleElement.textContent += sentence.charAt(i);
+                            await sleep(50);
+                        }
+                    }
+                };
+
+                // Start typing the first sentence
+                await typeSentence(bubbleText[0]);
+                console.log("First sentence completed");
+                // Wait after the first sentence
+                await sleep(2000);
+                
+                // Start typing the second sentence
+                await typeSentence(bubbleText[1]);
+                console.log("Second sentence completed");
+                // Wait after the second sentence
+                await sleep(2000);
+
+                // Transition to the next page
+                console.log("Moving to page 2...");
+                showPage('page-2');
+            } catch (error) {
+                console.error("Error in intro sequence:", error);
+                // Show manual start button as fallback
+                const manualBtn = document.getElementById('manual-start');
+                if (manualBtn) {
+                    manualBtn.style.display = 'block';
+                }
+            }
+        }
+        
+        // Add click listener for sound initialization
+        document.body.addEventListener('click', initSound, { once: true });
+        
+        // Show manual start button after 10 seconds if still on page 1
+        setTimeout(() => {
+            if (currentPage === 'page-1') {
+                console.log("Auto intro failed, showing manual button");
+                const manualBtn = document.getElementById('manual-start');
+                if (manualBtn) {
+                    manualBtn.style.display = 'block';
+                }
+            }
+        }, 10000);
+
+
+        function selectOption(button) {
+            playSound('click');
+            const answer = button.textContent.trim().toLowerCase();
+            
+            if (selectedAnswersQ2.includes(answer)) {
+                selectedAnswersQ2 = selectedAnswersQ2.filter(a => a !== answer);
+                button.classList.remove('selected');
+            } else {
+                if (selectedAnswersQ2.length < 2) {
+                    selectedAnswersQ2.push(answer);
+                    button.classList.add('selected');
+                }
+            }
+
+            const submitBtn = document.getElementById('q2-submit');
+            if (submitBtn) {
+                if (selectedAnswersQ2.length > 0) {
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('opacity-50');
+                } else {
+                    submitBtn.disabled = true;
+                    submitBtn.classList.add('opacity-50');
+                }
+            }
+        }
+
+        function checkAnswerQ2() {
+            const correctAnswers = ["baking soda", "cuka"];
+            const isCorrect = selectedAnswersQ2.length === 2 && selectedAnswersQ2.every(a => correctAnswers.includes(a));
+            
+            if (isCorrect) {
+                playSound('correct');
+                showPage('page-5');
+            } else {
+                playSound('wrong');
+                alert("Coba lagi! Pikirkan bahan alami di dapur yang bisa membersihkan.");
+            }
+        }
+        
+        const experimentResults = {
+            deterjen: {
+                method: "Deterjen Saja",
+                result: "Noda berkurang tapi masih berbekas",
+                explanation: "Deterjen mengandung surfaktan yang punya dua ujung (suka air & suka minyak). Saat dikucek, surfaktan menempel pada noda (minyak) dan gesekan membantu mengangkatnya. Namun kurang kuat untuk noda membandel.",
+                stainOpacity: 0.4
+            },
+            baking_soda_cuka: {
+                method: "Baking Soda + Cuka",
+                result: "Noda tidak hilang sempurna",
+                explanation: "Terjadi reaksi asam-basa menghasilkan gas CO₂, air, dan garam. Gelembung CO₂ membantu melepaskan kotoran dari serat kain, tapi kurang efektif tanpa surfaktan untuk mengangkat noda minyak.",
+                stainOpacity: 0.6
+            },
+            semua: {
+                method: "Deterjen + Baking Soda + Cuka",
+                result: "Noda hilang!",
+                explanation: "Kombinasi paling efektif! Reaksi asam-basa (cuka & baking soda) menghasilkan gelembung CO₂ yang membantu 'menggemburkan' noda, sementara surfaktan dari deterjen mengangkat dan mengikat noda agar tidak menempel kembali.",
+                stainOpacity: 0
+            }
+        }
+
+        let currentExperiment = null;
+
+        function runExperiment(method) {
+             // Reset visuals
+            document.querySelectorAll('#page-6 .option-btn').forEach(b => b.classList.remove('selected'));
+            const selectedBtn = document.querySelector(`button[onclick="runExperiment('${method}')"]`);
+            if (selectedBtn) {
+                selectedBtn.classList.add('selected');
+            }
+
+            currentExperiment = method;
+            const info = document.getElementById('experiment-info');
+            const water = document.getElementById('water');
+            const fabric = document.getElementById('fabric-in-bucket');
+            const bubbles = document.getElementById('bubbles');
+            
+            if (info) info.textContent = "Masukkan kain dan bahan...";
+            if (water) water.style.height = '0px';
+            if (fabric) fabric.style.opacity = '0';
+            
+            setTimeout(() => {
+                playSound('mix');
+                if (water) water.style.height = '60px';
+                if (fabric) fabric.style.opacity = '1';
+                if (info) info.textContent = "Bahan sudah tercampur.";
+            }, 500);
+
+            setTimeout(() => {
+                if (info) info.textContent = "Silakan kucek atau sikat nodanya!";
+                const kucekBtn = document.getElementById('action-kucek');
+                const sikatBtn = document.getElementById('action-sikat');
+                if (kucekBtn) kucekBtn.disabled = false;
+                if (sikatBtn) sikatBtn.disabled = false;
+            }, 2000);
+        }
+
+        let actionCount = 0;
+        function performAction(action) {
+            if (action === 'kucek') playSound('kucek');
+            if (action === 'sikat') playSound('sikat');
+
+            actionCount++;
+            
+            const stain = document.getElementById('stain-2');
+            if (stain) {
+                let currentOpacity = parseFloat(stain.style.opacity) || 1.0;
+                stain.style.opacity = currentOpacity * 0.8;
+            }
+
+            if (actionCount >= 2) {
+                const kucekBtn = document.getElementById('action-kucek');
+                const sikatBtn = document.getElementById('action-sikat');
+                const info = document.getElementById('experiment-info');
+                
+                if (kucekBtn) kucekBtn.disabled = true;
+                if (sikatBtn) sikatBtn.disabled = true;
+                if (info) info.textContent = "Melihat hasil...";
+                
+                setTimeout(() => showResult(currentExperiment), 1500);
+            }
+        }
+        
+        function showResult(method) {
+            const resultData = experimentResults[method];
+            if (!resultData) {
+                console.error('No result data for method:', method);
+                return;
+            }
+            
+            const methodEl = document.getElementById('result-method');
+            const statusEl = document.getElementById('result-status');
+            const explanationEl = document.getElementById('result-explanation');
+            const stainEl = document.getElementById('result-stain');
+            
+            if (methodEl) methodEl.textContent = resultData.method;
+            if (statusEl) {
+                statusEl.textContent = resultData.result;
+                statusEl.className = 'text-md font-semibold my-2 ' + (resultData.stainOpacity === 0 ? 'text-green-600' : 'text-red-500');
+            }
+            if (explanationEl) explanationEl.textContent = resultData.explanation;
+            if (stainEl) stainEl.style.opacity = resultData.stainOpacity;
+            
+            if (resultData.stainOpacity === 0) playSound('success');
+
+            showPage('page-7');
+        }
+
+        function restartGame() {
+            // Reset state variables
+            selectedAnswersQ2 = [];
+            currentExperiment = null;
+            actionCount = 0;
+
+            // Reset UI elements
+            document.querySelectorAll('.option-btn.selected').forEach(btn => btn.classList.remove('selected'));
+            const submitBtn = document.getElementById('q2-submit');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-50');
+            }
+
+            // Reset experiment page
+            const water = document.getElementById('water');
+            const fabric = document.getElementById('fabric-in-bucket');
+            const stain = document.getElementById('stain-2');
+            const info = document.getElementById('experiment-info');
+            const kucekBtn = document.getElementById('action-kucek');
+            const sikatBtn = document.getElementById('action-sikat');
+            
+            if (water) water.style.height = '0px';
+            if (fabric) fabric.style.opacity = '0';
+            if (stain) stain.style.opacity = '1';
+            if (info) info.textContent = '';
+            if (kucekBtn) kucekBtn.disabled = true;
+            if (sikatBtn) sikatBtn.disabled = true;
+            document.querySelectorAll('#page-6 .option-btn').forEach(b => b.classList.remove('selected'));
+            
+            // Reset to first page and restart intro sequence
+            showPage('page-1');
+            const bubbleElement = document.getElementById('bubble-text-1');
+            if (bubbleElement) {
+                bubbleElement.textContent = '';
+            }
+            
+            // Restart the intro sequence
+            setTimeout(() => {
+                runIntroSequence();
+            }, 500);
+        }
+
+    </script>
+</body>
+</html>
+
