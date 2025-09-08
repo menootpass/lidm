@@ -87,7 +87,7 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen" onload="setTimeout(runIntroSequence, 100)">
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
 
     <div id="gameContainer" class="game-container relative w-full bg-white flex flex-col overflow-hidden">
 
@@ -161,16 +161,23 @@
             </div>
             <div class="bubble w-full max-w-sm mb-4">
                 <p class="text-gray-700 text-base">Kalau mencuci baju dengan noda membandel pakai apa nih?</p>
+                <p class="text-gray-500 text-sm mt-2">Pilih maksimal 4 bahan (minimal 2)</p>
             </div>
-             <div id="q2-options" class="options-container w-full max-w-sm grid grid-cols-2 gap-2 text-sm">
+             <div id="q2-options" class="options-container w-full max-w-sm grid grid-cols-3 gap-2 text-xs">
                 <button onclick="selectOption(this)" data-correct="false" class="option-btn bg-white text-gray-700 font-semibold py-2 px-3 rounded-lg">Deterjen</button>
                 <button onclick="selectOption(this)" data-correct="false" class="option-btn bg-white text-gray-700 font-semibold py-2 px-3 rounded-lg">Air</button>
                 <button onclick="selectOption(this)" data-correct="true" class="option-btn bg-white text-gray-700 font-semibold py-2 px-3 rounded-lg">Baking soda</button>
                 <button onclick="selectOption(this)" data-correct="true" class="option-btn bg-white text-gray-700 font-semibold py-2 px-3 rounded-lg">Cuka</button>
                 <button onclick="selectOption(this)" data-correct="false" class="option-btn bg-white text-gray-700 font-semibold py-2 px-3 rounded-lg">Air Gula</button>
                 <button onclick="selectOption(this)" data-correct="false" class="option-btn bg-white text-gray-700 font-semibold py-2 px-3 rounded-lg">Air Tanah</button>
+                <button onclick="selectOption(this)" data-correct="false" class="option-btn bg-white text-gray-700 font-semibold py-2 px-3 rounded-lg">Air Hujan</button>
+                <button onclick="selectOption(this)" data-correct="false" class="option-btn bg-white text-gray-700 font-semibold py-2 px-3 rounded-lg">Sabun Cuci Piring</button>
+                <button onclick="selectOption(this)" data-correct="false" class="option-btn bg-white text-gray-700 font-semibold py-2 px-3 rounded-lg">Sampo</button>
             </div>
-            <button id="q2-submit" onclick="checkAnswerQ2()" class="mt-4 btn bg-green-500 text-white font-bold py-2 px-6 rounded-full shadow-lg opacity-50" disabled>Cek Jawaban</button>
+            <div class="mt-4 flex flex-col items-center">
+                <p id="selection-counter" class="text-sm text-gray-500 mb-2">Dipilih: 0/4</p>
+                <button id="q2-submit" onclick="checkAnswerQ2()" class="btn bg-green-500 text-white font-bold py-2 px-6 rounded-full shadow-lg opacity-50" disabled>Cek Jawaban</button>
+            </div>
         </div>
 
         <!-- Page 5: Info -->
@@ -282,6 +289,14 @@
         let currentPage = 'page-1';
         let selectedAnswersQ2 = [];
         let synth;
+        let gameProgress = {
+            currentPage: 'page-1',
+            selectedAnswersQ2: [],
+            currentExperiment: null,
+            actionCount: 0,
+            hasCompletedIntro: false
+        };
+
 
         // Initialize sound synth on the first user interaction
         function initSound() {
@@ -339,6 +354,43 @@
             }
         }
 
+        // --- Progress Management ---
+        function saveProgress() {
+            gameProgress.currentPage = currentPage;
+            gameProgress.selectedAnswersQ2 = selectedAnswersQ2;
+            gameProgress.currentExperiment = currentExperiment;
+            gameProgress.actionCount = actionCount;
+            localStorage.setItem('chemistryGameProgress', JSON.stringify(gameProgress));
+        }
+
+        function loadProgress() {
+            const saved = localStorage.getItem('chemistryGameProgress');
+            if (saved) {
+                try {
+                    gameProgress = JSON.parse(saved);
+                    currentPage = gameProgress.currentPage;
+                    selectedAnswersQ2 = gameProgress.selectedAnswersQ2 || [];
+                    currentExperiment = gameProgress.currentExperiment;
+                    actionCount = gameProgress.actionCount || 0;
+                    return true;
+                } catch (e) {
+                    console.error('Error loading progress:', e);
+                }
+            }
+            return false;
+        }
+
+        function clearProgress() {
+            localStorage.removeItem('chemistryGameProgress');
+            gameProgress = {
+                currentPage: 'page-1',
+                selectedAnswersQ2: [],
+                currentExperiment: null,
+                actionCount: 0,
+                hasCompletedIntro: false
+            };
+        }
+
         // --- Page Navigation ---
         function showPage(pageId) {
             console.log("Switching to page:", pageId);
@@ -353,6 +405,23 @@
             if (targetPage) {
                 targetPage.classList.add('active');
                 currentPage = pageId;
+                
+                // Initialize counter when showing page 4
+                if (pageId === 'page-4') {
+                    const counter = document.getElementById('selection-counter');
+                    if (counter) {
+                        counter.textContent = `Dipilih: ${selectedAnswersQ2.length}/4`;
+                        if (selectedAnswersQ2.length >= 4) {
+                            counter.classList.add('text-red-500');
+                            counter.classList.remove('text-gray-500');
+                        } else {
+                            counter.classList.add('text-gray-500');
+                            counter.classList.remove('text-red-500');
+                        }
+                    }
+                }
+                
+                saveProgress(); // Save progress setiap kali pindah halaman
                 console.log("Successfully switched to page:", pageId);
             } else {
                 console.error('Page not found:', pageId);
@@ -360,6 +429,100 @@
         }
 
         // --- Game Logic ---
+
+        // Initialize game on page load
+        function initializeGame() {
+            console.log("Initializing game...");
+            
+            // Initialize counter on page 4
+            const counter = document.getElementById('selection-counter');
+            if (counter) {
+                counter.textContent = `Dipilih: 0/4`;
+                counter.classList.add('text-gray-500');
+                counter.classList.remove('text-red-500');
+            }
+            
+            // Try to load saved progress
+            const hasProgress = loadProgress();
+            
+            if (hasProgress && gameProgress.hasCompletedIntro) {
+                // Skip intro if already completed
+                console.log("Loading saved progress from page:", currentPage);
+                restoreGameState();
+                showPage(currentPage);
+            } else {
+                // Start fresh with intro sequence
+                console.log("Starting fresh game with intro...");
+                runIntroSequence();
+            }
+        }
+
+        // Restore game state from saved progress
+        function restoreGameState() {
+            // Restore selected answers for Q2
+            if (selectedAnswersQ2.length > 0) {
+                selectedAnswersQ2.forEach(answer => {
+                    const buttons = document.querySelectorAll('#q2-options button');
+                    buttons.forEach(btn => {
+                        if (btn.textContent.trim().toLowerCase() === answer) {
+                            btn.classList.add('selected');
+                        }
+                    });
+                });
+                
+                // Update selection counter
+                const counter = document.getElementById('selection-counter');
+                if (counter) {
+                    counter.textContent = `Dipilih: ${selectedAnswersQ2.length}/4`;
+                    // Set color based on count
+                    if (selectedAnswersQ2.length >= 4) {
+                        counter.classList.add('text-red-500');
+                        counter.classList.remove('text-gray-500');
+                    } else {
+                        counter.classList.add('text-gray-500');
+                        counter.classList.remove('text-red-500');
+                    }
+                }
+                
+                // Enable submit button if answers are selected
+                const submitBtn = document.getElementById('q2-submit');
+                if (submitBtn && selectedAnswersQ2.length >= 2) {
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('opacity-50');
+                }
+            } else {
+                // Initialize counter even if no selections
+                const counter = document.getElementById('selection-counter');
+                if (counter) {
+                    counter.textContent = `Dipilih: 0/4`;
+                    counter.classList.add('text-gray-500');
+                    counter.classList.remove('text-red-500');
+                }
+            }
+
+            // Restore experiment state if on experiment page
+            if (currentPage === 'page-6' && currentExperiment) {
+                const selectedBtn = document.querySelector(`button[onclick="runExperiment('${currentExperiment}')"]`);
+                if (selectedBtn) {
+                    selectedBtn.classList.add('selected');
+                }
+                
+                // Restore experiment visuals
+                const water = document.getElementById('water');
+                const fabric = document.getElementById('fabric-in-bucket');
+                const info = document.getElementById('experiment-info');
+                
+                if (water) water.style.height = '60px';
+                if (fabric) fabric.style.opacity = '1';
+                if (info) info.textContent = "Bahan sudah tercampur. Silakan kucek atau sikat nodanya!";
+                
+                // Enable action buttons
+                const kucekBtn = document.getElementById('action-kucek');
+                const sikatBtn = document.getElementById('action-sikat');
+                if (kucekBtn) kucekBtn.disabled = false;
+                if (sikatBtn) sikatBtn.disabled = false;
+            }
+        }
 
         // Typing effect for intro
         async function runIntroSequence() {
@@ -399,6 +562,10 @@
                 // Wait after the second sentence
                 await sleep(2000);
 
+                // Mark intro as completed and save progress
+                gameProgress.hasCompletedIntro = true;
+                saveProgress();
+
                 // Transition to the next page
                 console.log("Moving to page 2...");
                 showPage('page-2');
@@ -414,6 +581,11 @@
         
         // Add click listener for sound initialization
         document.body.addEventListener('click', initSound, { once: true });
+        
+        // Initialize game when page loads
+        window.addEventListener('load', () => {
+            setTimeout(initializeGame, 100);
+        });
         
         // Show manual start button after 10 seconds if still on page 1
         setTimeout(() => {
@@ -432,18 +604,44 @@
             const answer = button.textContent.trim().toLowerCase();
             
             if (selectedAnswersQ2.includes(answer)) {
+                // Deselect if already selected
                 selectedAnswersQ2 = selectedAnswersQ2.filter(a => a !== answer);
                 button.classList.remove('selected');
             } else {
-                if (selectedAnswersQ2.length < 2) {
+                // Select if not already selected and under limit
+                if (selectedAnswersQ2.length < 4) {
                     selectedAnswersQ2.push(answer);
                     button.classList.add('selected');
+                } else {
+                    // Show visual feedback that limit is reached
+                    button.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        button.style.transform = 'scale(1)';
+                    }, 150);
+                    return; // Don't proceed if limit reached
                 }
             }
 
+            // Update selection counter
+            const counter = document.getElementById('selection-counter');
+            if (counter) {
+                counter.textContent = `Dipilih: ${selectedAnswersQ2.length}/4`;
+                // Change color based on selection count
+                if (selectedAnswersQ2.length >= 4) {
+                    counter.classList.add('text-red-500');
+                    counter.classList.remove('text-gray-500');
+                } else {
+                    counter.classList.add('text-gray-500');
+                    counter.classList.remove('text-red-500');
+                }
+            }
+
+            // Save progress when answers change
+            saveProgress();
+
             const submitBtn = document.getElementById('q2-submit');
             if (submitBtn) {
-                if (selectedAnswersQ2.length > 0) {
+                if (selectedAnswersQ2.length >= 2) {
                     submitBtn.disabled = false;
                     submitBtn.classList.remove('opacity-50');
                 } else {
@@ -455,14 +653,14 @@
 
         function checkAnswerQ2() {
             const correctAnswers = ["baking soda", "cuka"];
-            const isCorrect = selectedAnswersQ2.length === 2 && selectedAnswersQ2.every(a => correctAnswers.includes(a));
+            const hasCorrectAnswers = correctAnswers.every(correctAnswer => selectedAnswersQ2.includes(correctAnswer));
             
-            if (isCorrect) {
+            if (hasCorrectAnswers && selectedAnswersQ2.length >= 2) {
                 playSound('correct');
                 showPage('page-5');
             } else {
                 playSound('wrong');
-                alert("Coba lagi! Pikirkan bahan alami di dapur yang bisa membersihkan.");
+                alert("Coba lagi! Pastikan kamu memilih Baking Soda dan Cuka di antara pilihan yang ada.");
             }
         }
         
@@ -498,6 +696,11 @@
             }
 
             currentExperiment = method;
+            actionCount = 0; // Reset action count for new experiment
+            
+            // Save progress
+            saveProgress();
+            
             const info = document.getElementById('experiment-info');
             const water = document.getElementById('water');
             const fabric = document.getElementById('fabric-in-bucket');
@@ -529,6 +732,9 @@
             if (action === 'sikat') playSound('sikat');
 
             actionCount++;
+            
+            // Save progress after each action
+            saveProgress();
             
             const stain = document.getElementById('stain-2');
             if (stain) {
@@ -575,10 +781,14 @@
         }
 
         function restartGame() {
+            // Clear saved progress
+            clearProgress();
+            
             // Reset state variables
             selectedAnswersQ2 = [];
             currentExperiment = null;
             actionCount = 0;
+            currentPage = 'page-1';
 
             // Reset UI elements
             document.querySelectorAll('.option-btn.selected').forEach(btn => btn.classList.remove('selected'));
