@@ -371,7 +371,7 @@
                 <button onclick="selectOption(this)" data-correct="false" class="option-btn bg-white text-gray-700 font-semibold py-2 px-3 rounded-lg">Air Gula</button>
                 <button onclick="selectOption(this)" data-correct="false" class="option-btn bg-white text-gray-700 font-semibold py-2 px-3 rounded-lg">Air Tanah</button>
                 <button onclick="selectOption(this)" data-correct="false" class="option-btn bg-white text-gray-700 font-semibold py-2 px-3 rounded-lg">Air Hujan</button>
-                <button onclick="selectOption(this)" data-correct="false" class="option-btn bg-white text-gray-700 font-semibold py-2 px-3 rounded-lg">Sabun Cuci Piring</button>
+                <button onclick="selectOption(this)" data-correct="false" class="option-btn bg-white text-gray-700 font-semibold py-2 px-3 rounded-lg">Detergen Cuci Piring</button>
                 <button onclick="selectOption(this)" data-correct="false" class="option-btn bg-white text-gray-700 font-semibold py-2 px-3 rounded-lg">Sampo</button>
             </div>
             <div class="mt-4 flex flex-col items-center">
@@ -1019,10 +1019,10 @@
             switch(method) {
                 case 'deterjen':
                     if (ingredient1) {
-                        ingredient1.src = 'sabun.png';
-                        ingredient1.alt = 'Sabun';
+                        ingredient1.src = 'Detergen.png';
+                        ingredient1.alt = 'Detergen';
                         ingredient1.style.display = 'block';
-                        ingredient1.dataset.ingredientType = 'sabun';
+                        ingredient1.dataset.ingredientType = 'Detergen';
                     }
                     break;
                     
@@ -1043,10 +1043,10 @@
                     
                 case 'semua':
                     if (ingredient1) {
-                        ingredient1.src = 'sabun.png';
-                        ingredient1.alt = 'Sabun';
+                        ingredient1.src = 'Detergen.png';
+                        ingredient1.alt = 'Detergen';
                         ingredient1.style.display = 'block';
-                        ingredient1.dataset.ingredientType = 'sabun';
+                        ingredient1.dataset.ingredientType = 'Detergen';
                     }
                     if (ingredient2) {
                         ingredient2.src = 'bsoda.png';
@@ -1233,7 +1233,7 @@
         
         function showIngredientAdded(ingredientType) {
             const ingredientNames = {
-                'sabun': 'Sabun',
+                'Detergen': 'Detergen',
                 'bsoda': 'Soda Kue',
                 'cuka': 'Cuka'
             };
@@ -1278,11 +1278,11 @@
         function getRequiredIngredients() {
             switch(currentExperiment) {
                 case 'deterjen':
-                    return ['sabun'];
+                    return ['Detergen'];
                 case 'baking_soda_cuka':
                     return ['bsoda', 'cuka'];
                 case 'semua':
-                    return ['sabun', 'bsoda', 'cuka'];
+                    return ['Detergen', 'bsoda', 'cuka'];
                 default:
                     return [];
             }

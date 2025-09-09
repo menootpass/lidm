@@ -11,99 +11,406 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f7fafc;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
         }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .floating-element {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .pulse-glow {
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(102, 126, 234, 0.6); }
+        }
+        
         .progress-bar-fill {
             transition: width 0.3s ease-in-out;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
         }
+        
         .modal-overlay {
             transition: opacity 0.3s ease-in-out;
         }
+        
         .loader {
             border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
+            border-top: 4px solid #667eea;
             border-radius: 50%;
             width: 40px;
             height: 40px;
             animation: spin 1s linear infinite;
         }
+        
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            color: #667eea;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
+            transform: translateY(-1px);
+        }
+        
+        .input-field {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        .status-indicator {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .question-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .question-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .progress-container {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(15px);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+        
+        .completion-icon {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+        
+        .decorative-dots {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+        }
+        
+        .decorative-dots:nth-child(1) {
+            top: 10%;
+            right: 10%;
+            animation-delay: 0s;
+        }
+        
+        .decorative-dots:nth-child(2) {
+            bottom: 20%;
+            left: 5%;
+            animation-delay: 2s;
+        }
+        
+        .decorative-dots:nth-child(3) {
+            top: 50%;
+            right: 5%;
+            animation-delay: 4s;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-in-left {
+            animation: slideInLeft 0.5s ease-out;
+        }
+        
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .slide-in-right {
+            animation: slideInRight 0.5s ease-out;
+        }
+        
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .scale-in {
+            animation: scaleIn 0.3s ease-out;
+        }
+        
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .progress-bar-container {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-bar-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
     </style>
 </head>
-<body class="bg-gray-50 flex items-center justify-center min-h-screen p-4">
+<body class="flex items-center justify-center min-h-screen p-4 relative">
+    <!-- Decorative Elements -->
+    <div class="decorative-dots"></div>
+    <div class="decorative-dots"></div>
+    <div class="decorative-dots"></div>
 
     <!-- Halaman Awal untuk Mengisi Nama -->
-    <div id="startScreen" class="bg-white w-full max-w-lg rounded-2xl shadow-lg p-8 text-center">
-        <h1 class="text-3xl font-bold text-gray-800">Selamat Datang</h1>
-        <p class="text-gray-600 mt-2">Silakan masukkan nama lengkap Anda untuk memulai asesmen.</p>
+    <div id="startScreen" class="glass-card w-full max-w-lg p-8 text-center floating-element">
+        <div class="mb-6">
+            <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center pulse-glow">
+                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold gradient-text">Selamat Datang</h1>
+            <p class="text-gray-600 mt-2">Silakan masukkan nama lengkap Anda untuk memulai asesmen.</p>
+        </div>
         <div class="mt-8">
-            <input type="text" id="nameInput" placeholder="Ketik nama lengkap Anda di sini..." class="w-full px-4 py-3 text-lg border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-gray-600 focus:border-transparent transition">
+            <input type="text" id="nameInput" placeholder="Ketik nama lengkap Anda di sini..." class="input-field w-full px-4 py-3 text-lg rounded-lg focus:ring-0 focus:outline-none">
             <p id="nameError" class="text-red-500 text-sm mt-2 hidden">Nama tidak boleh kosong.</p>
         </div>
-        <button id="startButton" class="mt-6 w-full bg-gray-800 hover:bg-gray-900 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300 text-lg">
+        <button id="startButton" class="btn-primary mt-6 w-full text-white font-bold py-3 px-6 rounded-lg text-lg">
             Mulai Asesmen
         </button>
     </div>
 
     <!-- Kontainer Asesmen Utama (Awalnya Tersembunyi) -->
-    <div id="assessmentContainer" class="hidden bg-white w-full max-w-3xl rounded-2xl shadow-lg p-6 md:p-10 transition-all duration-300">
+    <div id="assessmentContainer" class="hidden glass-card w-full max-w-3xl p-6 md:p-10 transition-all duration-300">
         
-        <header class="mb-8 text-left">
-            <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Asesmen Sumatif</h1>
-            <p class="text-gray-500 mt-1 text-lg">Pengisi: <span id="displayName" class="font-semibold"></span></p>
+        <header class="mb-8 text-center">
+            <div class="flex items-center justify-center mb-4">
+                <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center mr-3 pulse-glow">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+                <h1 class="text-3xl md:text-4xl font-bold gradient-text">Asesmen Sumatif</h1>
+            </div>
+            <div class="status-indicator inline-block">
+                <span class="text-sm">👤 Pengisi: <span id="displayName" class="font-semibold"></span></span>
+            </div>
         </header>
 
-        <div class="mb-8">
-            <div class="flex justify-between mb-2">
+        <div class="progress-container mb-8">
+            <div class="flex justify-between mb-4">
                 <span id="progressText" class="text-sm font-medium text-gray-600">Pertanyaan 1 dari 5</span>
-                <span id="progressPercent" class="text-sm font-medium text-gray-600">0%</span>
+                <span id="progressPercent" class="text-sm font-medium text-gray-600 font-bold">0%</span>
             </div>
-            <div class="w-full bg-gray-200 rounded-full h-3">
-                <div id="progressBar" class="bg-gray-700 h-3 rounded-full progress-bar-fill" style="width: 0%"></div>
+            <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden progress-bar-container">
+                <div id="progressBar" class="h-4 rounded-full progress-bar-fill" style="width: 0%"></div>
+            </div>
+            <div id="answerStatus" class="mt-3 text-center">
+                <div class="inline-flex items-center px-4 py-2 bg-gray-100 rounded-full">
+                    <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span class="text-sm text-gray-600">
+                        <span id="answeredCount" class="font-semibold text-blue-600">0</span> dari <span id="totalQuestions" class="font-semibold">5</span> pertanyaan terjawab
+                    </span>
+                </div>
             </div>
         </div>
 
-        <div id="questionContent">
-            <h2 id="questionText" class="text-xl md:text-2xl font-semibold text-gray-800 mb-4">Memuat pertanyaan...</h2>
+        <div id="questionContent" class="question-card">
+            <div class="flex items-start mb-4">
+                <div class="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                    <span id="questionNumber" class="text-white font-bold text-sm">1</span>
+                </div>
+                <h2 id="questionText" class="text-xl md:text-2xl font-semibold text-gray-800 leading-relaxed">Memuat pertanyaan...</h2>
+            </div>
             <div id="answerContainer">
-                <textarea id="answerTextarea" rows="5" class="w-full p-4 border-2 border-gray-200 rounded-lg text-lg focus:ring-2 focus:ring-gray-600 focus:border-transparent transition" placeholder="Ketik jawaban Anda di sini..."></textarea>
+                <textarea id="answerTextarea" rows="5" class="input-field w-full p-4 rounded-lg text-lg focus:ring-0 focus:outline-none resize-none" placeholder="Ketik jawaban Anda di sini..."></textarea>
             </div>
         </div>
         
         <div id="completionScreen" class="hidden text-center py-10">
-             <svg class="mx-auto h-20 w-20 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <h2 class="text-3xl font-bold text-gray-800 mt-6">Terima Kasih!</h2>
-            <p class="text-gray-600 mt-3 text-lg">Jawaban Anda telah berhasil dikirim.</p>
+            <div class="glass-card p-8 max-w-md mx-auto">
+                <div class="completion-icon mx-auto h-20 w-20 mb-6">
+                    <svg class="w-full h-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h2 class="text-3xl font-bold gradient-text mb-4">Terima Kasih!</h2>
+                <p class="text-gray-600 text-lg">Jawaban Anda telah berhasil dikirim.</p>
+                <div class="mt-6 flex justify-center">
+                    <div class="w-16 h-1 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full"></div>
+                </div>
+            </div>
         </div>
 
-        <footer id="navigation" class="mt-10 pt-6 border-t border-gray-200 flex justify-between items-center">
-            <button id="prevButton" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-lg transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+        <footer id="navigation" class="mt-10 pt-6 flex justify-between items-center">
+            <button id="prevButton" class="btn-secondary font-bold py-3 px-6 rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+                <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
                 Sebelumnya
             </button>
-            <button id="nextButton" class="bg-gray-800 hover:bg-gray-900 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300">
-                Selanjutnya
-            </button>
+            <div class="flex gap-3">
+                <button id="jumpToUnansweredButton" class="bg-gradient-to-r from-orange-400 to-red-500 hover:from-orange-500 hover:to-red-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 text-sm shadow-lg" style="display: none;">
+                    <svg class="w-4 h-4 mr-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    Lompat ke Pertanyaan Kosong
+                </button>
+                <button id="nextButton" class="btn-primary font-bold py-3 px-6 rounded-lg transition-all duration-300">
+                    Selanjutnya
+                    <svg class="w-4 h-4 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </button>
+            </div>
         </footer>
     </div>
     
-    <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 modal-overlay opacity-0 pointer-events-none">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-8 text-center">
+    <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 modal-overlay opacity-0 pointer-events-none backdrop-blur-sm">
+        <div class="glass-card w-full max-w-md p-8 text-center">
             <div id="modalContent">
-                <h3 class="text-2xl font-bold text-gray-800">Kirim Jawaban?</h3>
-                <p class="text-gray-600 mt-4">Apakah Anda yakin ingin mengirim semua jawaban sekarang? Anda tidak dapat mengubahnya kembali setelah dikirim.</p>
-                <div class="mt-8 flex justify-center gap-4">
-                    <button id="cancelButton" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-lg transition-colors duration-300">Batal</button>
-                    <button id="confirmSubmitButton" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300">Ya, Kirim</button>
+                <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center pulse-glow">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold gradient-text mb-4">Kirim Jawaban?</h3>
+                <p class="text-gray-600 mb-6">Apakah Anda yakin ingin mengirim semua jawaban sekarang? Anda tidak dapat mengubahnya kembali setelah dikirim.</p>
+                <div class="flex justify-center gap-4">
+                    <button id="cancelButton" class="btn-secondary font-bold py-3 px-6 rounded-lg transition-all duration-300">
+                        <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        Batal
+                    </button>
+                    <button id="confirmSubmitButton" class="bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 shadow-lg">
+                        <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                        </svg>
+                        Ya, Kirim
+                    </button>
                 </div>
             </div>
             <div id="modalLoading" class="hidden">
-                 <div class="loader mx-auto"></div>
-                 <p class="text-gray-600 mt-4">Sedang mengirim jawaban...</p>
+                <div class="loader mx-auto mb-4"></div>
+                <p class="text-gray-600">Sedang mengirim jawaban...</p>
+                <div class="mt-4 flex justify-center">
+                    <div class="w-12 h-1 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full animate-pulse"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -151,8 +458,32 @@
             questionText.textContent = questionData.question;
             answerTextarea.value = userAnswers[index] || ''; // Muat jawaban yang tersimpan
             answerTextarea.focus();
+            
+            // Update question number
+            const questionNumber = document.getElementById('questionNumber');
+            if (questionNumber) {
+                questionNumber.textContent = index + 1;
+            }
+            
+            // Add animation to question card
+            const questionCard = document.getElementById('questionContent');
+            if (questionCard) {
+                questionCard.classList.remove('fade-in');
+                setTimeout(() => {
+                    questionCard.classList.add('fade-in');
+                }, 10);
+            }
+            
             updateNavigation();
             updateProgressBar();
+            updateAnswerStatus();
+        }
+        
+        function handleAnswerChange() {
+            // Simpan jawaban saat user mengetik
+            userAnswers[currentQuestionIndex] = answerTextarea.value.trim();
+            updateNavigation();
+            updateAnswerStatus();
         }
         
         function saveCurrentAnswer() {
@@ -161,14 +492,39 @@
 
         function updateNavigation() {
             prevButton.disabled = currentQuestionIndex === 0;
+            
+            // Cek apakah pertanyaan saat ini sudah dijawab
+            const currentAnswer = userAnswers[currentQuestionIndex] || '';
+            const isCurrentAnswered = currentAnswer.trim().length > 0;
+            
             if (currentQuestionIndex === questions.length - 1) {
-                nextButton.textContent = 'Kirim Jawaban';
-                nextButton.classList.remove('bg-gray-800', 'hover:bg-gray-900');
-                nextButton.classList.add('bg-green-600', 'hover:bg-green-700');
+                // Cek apakah semua pertanyaan sudah dijawab
+                const allAnswered = userAnswers.every(answer => answer && answer.trim().length > 0);
+                
+                if (allAnswered) {
+                    nextButton.textContent = 'Kirim Jawaban';
+                    nextButton.classList.remove('bg-gray-800', 'hover:bg-gray-900', 'opacity-50', 'cursor-not-allowed');
+                    nextButton.classList.add('bg-green-600', 'hover:bg-green-700');
+                    nextButton.disabled = false;
+                } else {
+                    nextButton.textContent = 'Jawab Semua Pertanyaan';
+                    nextButton.classList.remove('bg-green-600', 'hover:bg-green-700');
+                    nextButton.classList.add('bg-gray-400', 'opacity-50', 'cursor-not-allowed');
+                    nextButton.disabled = true;
+                }
             } else {
-                nextButton.textContent = 'Selanjutnya';
-                nextButton.classList.remove('bg-green-600', 'hover:bg-green-700');
-                nextButton.classList.add('bg-gray-800', 'hover:bg-gray-900');
+                // Untuk pertanyaan bukan terakhir, cek apakah pertanyaan saat ini dijawab
+                if (isCurrentAnswered) {
+                    nextButton.textContent = 'Selanjutnya';
+                    nextButton.classList.remove('bg-gray-400', 'opacity-50', 'cursor-not-allowed');
+                    nextButton.classList.add('bg-gray-800', 'hover:bg-gray-900');
+                    nextButton.disabled = false;
+                } else {
+                    nextButton.textContent = 'Jawab Pertanyaan Ini';
+                    nextButton.classList.remove('bg-gray-800', 'hover:bg-gray-900');
+                    nextButton.classList.add('bg-gray-400', 'opacity-50', 'cursor-not-allowed');
+                    nextButton.disabled = true;
+                }
             }
         }
         
@@ -179,10 +535,79 @@
             progressPercent.textContent = `${Math.round(progress)}%`;
         }
         
+        function updateAnswerStatus() {
+            const answeredCount = userAnswers.filter(answer => answer && answer.trim().length > 0).length;
+            const answeredCountElement = document.getElementById('answeredCount');
+            const totalQuestionsElement = document.getElementById('totalQuestions');
+            const jumpButton = document.getElementById('jumpToUnansweredButton');
+            
+            if (answeredCountElement) {
+                answeredCountElement.textContent = answeredCount;
+            }
+            if (totalQuestionsElement) {
+                totalQuestionsElement.textContent = questions.length;
+            }
+            
+            // Update warna berdasarkan status
+            const answerStatus = document.getElementById('answerStatus');
+            if (answerStatus) {
+                if (answeredCount === questions.length) {
+                    answerStatus.classList.remove('text-gray-500');
+                    answerStatus.classList.add('text-green-600', 'font-semibold');
+                } else {
+                    answerStatus.classList.remove('text-green-600', 'font-semibold');
+                    answerStatus.classList.add('text-gray-500');
+                }
+            }
+            
+            // Update visual indicator pada textarea
+            const currentAnswer = userAnswers[currentQuestionIndex] || '';
+            if (currentAnswer.trim().length > 0) {
+                answerTextarea.classList.remove('border-gray-200', 'border-red-300');
+                answerTextarea.classList.add('border-green-300');
+            } else {
+                answerTextarea.classList.remove('border-green-300', 'border-red-300');
+                answerTextarea.classList.add('border-gray-200');
+            }
+            
+            // Tampilkan/sembunyikan tombol lompat ke pertanyaan kosong
+            if (jumpButton) {
+                const hasUnanswered = userAnswers.some(answer => !answer || answer.trim().length === 0);
+                if (hasUnanswered) {
+                    jumpButton.style.display = 'block';
+                } else {
+                    jumpButton.style.display = 'none';
+                }
+            }
+        }
+        
+        function jumpToUnanswered() {
+            const firstUnansweredIndex = userAnswers.findIndex(answer => !answer || answer.trim().length === 0);
+            if (firstUnansweredIndex !== -1) {
+                saveCurrentAnswer();
+                currentQuestionIndex = firstUnansweredIndex;
+                loadQuestion(currentQuestionIndex);
+            }
+        }
+        
         function showConfirmModal() {
+            // Cek apakah ada pertanyaan yang belum dijawab
+            const unansweredQuestions = [];
+            userAnswers.forEach((answer, index) => {
+                if (!answer || answer.trim().length === 0) {
+                    unansweredQuestions.push(index + 1);
+                }
+            });
+            
+            if (unansweredQuestions.length > 0) {
+                alert(`Pertanyaan berikut belum dijawab: ${unansweredQuestions.join(', ')}`);
+                return;
+            }
+            
             modalContent.style.display = 'block';
             modalLoading.style.display = 'none';
             confirmModal.classList.remove('opacity-0', 'pointer-events-none');
+            confirmModal.classList.add('scale-in');
         }
 
         function hideConfirmModal() {
@@ -193,9 +618,17 @@
             assessmentContainer.innerHTML = ''; // Hapus semua konten asesmen
             assessmentContainer.appendChild(completionScreen); // Tampilkan layar selesai
             completionScreen.classList.remove('hidden');
+            completionScreen.classList.add('fade-in');
         }
 
         function submitData() {
+            // Validasi tambahan sebelum submit
+            const allAnswered = userAnswers.every(answer => answer && answer.trim().length > 0);
+            if (!allAnswered) {
+                alert('Semua pertanyaan harus dijawab sebelum mengirim!');
+                return;
+            }
+            
             modalContent.style.display = 'none';
             modalLoading.style.display = 'block';
             
@@ -243,19 +676,46 @@
                 displayName.textContent = userName;
                 startScreen.classList.add('hidden');
                 assessmentContainer.classList.remove('hidden');
+                assessmentContainer.classList.add('fade-in');
                 loadQuestion(currentQuestionIndex);
+                updateAnswerStatus(); // Inisialisasi status jawaban
             } else {
                 nameError.classList.remove('hidden');
+                // Add shake animation to input
+                nameInput.classList.add('animate-pulse');
+                setTimeout(() => {
+                    nameInput.classList.remove('animate-pulse');
+                }, 1000);
             }
         });
         
         nextButton.addEventListener('click', () => {
             saveCurrentAnswer();
+            
+            // Cek apakah pertanyaan saat ini sudah dijawab
+            const currentAnswer = userAnswers[currentQuestionIndex] || '';
+            if (currentAnswer.trim().length === 0) {
+                // Add shake animation to textarea
+                answerTextarea.classList.add('animate-pulse');
+                setTimeout(() => {
+                    answerTextarea.classList.remove('animate-pulse');
+                }, 1000);
+                alert('Pertanyaan ini harus dijawab terlebih dahulu!');
+                answerTextarea.focus();
+                return;
+            }
+            
             if (currentQuestionIndex < questions.length - 1) {
                 currentQuestionIndex++;
                 loadQuestion(currentQuestionIndex);
             } else {
-                showConfirmModal();
+                // Cek apakah semua pertanyaan sudah dijawab sebelum menampilkan modal konfirmasi
+                const allAnswered = userAnswers.every(answer => answer && answer.trim().length > 0);
+                if (allAnswered) {
+                    showConfirmModal();
+                } else {
+                    alert('Semua pertanyaan harus dijawab sebelum mengirim!');
+                }
             }
         });
 
@@ -266,6 +726,16 @@
                 loadQuestion(currentQuestionIndex);
             }
         });
+        
+        // Event listener untuk textarea agar validasi berjalan real-time
+        answerTextarea.addEventListener('input', handleAnswerChange);
+        answerTextarea.addEventListener('keyup', handleAnswerChange);
+        
+        // Event listener untuk tombol lompat ke pertanyaan kosong
+        const jumpToUnansweredButton = document.getElementById('jumpToUnansweredButton');
+        if (jumpToUnansweredButton) {
+            jumpToUnansweredButton.addEventListener('click', jumpToUnanswered);
+        }
         
         cancelButton.addEventListener('click', hideConfirmModal);
         confirmSubmitButton.addEventListener('click', () => {
