@@ -289,7 +289,7 @@
                 <img src="maskot.png" alt="Maskot" class="w-[150px] h-[150px] rounded-full object-cover shadow-md">
             </div>
             <div class="board bg-white p-6 rounded-lg shadow-md w-full max-w-sm mb-6">
-                <p class="text-gray-800 text-xl font-semibold">Apakah Bapak/Ibu pernah mencuci baju sendiri?</p>
+                <p class="text-gray-800 text-xl font-semibold">Apakah Anda pernah mencuci baju sendiri?</p>
             </div>
             <div class="options-container w-full max-w-sm space-y-3">
                 <button onclick="playSound('click'); showPage('page-4')" class="option-btn w-full bg-white text-gray-700 font-semibold py-3 px-4 rounded-lg">Ya, sering mencuci</button>
@@ -300,25 +300,8 @@
         <!-- Page 4: Question 2 -->
         <div id="page-4" class="page flex-col justify-center items-center h-full p-6 text-center">
              <div class="image-container bg-gray-200 rounded-lg w-64 h-64 mb-4 flex items-center justify-center relative overflow-hidden">
-                <!-- Fabric SVG -->
-                <svg class="absolute w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="100" height="100" fill="#EBF4FF"/>
-                    <line x1="10" y1="0" x2="10" y2="100" stroke="#D1E3FF" stroke-width="2"/>
-                    <line x1="30" y1="0" x2="30" y2="100" stroke="#D1E3FF" stroke-width="2"/>
-                    <line x1="50" y1="0" x2="50" y2="100" stroke="#D1E3FF" stroke-width="2"/>
-                    <line x1="70" y1="0" x2="70" y2="100" stroke="#D1E3FF" stroke-width="2"/>
-                    <line x1="90" y1="0" x2="90" y2="100" stroke="#D1E3FF" stroke-width="2"/>
-                    <line x1="0" y1="10" x2="100" y2="10" stroke="#D1E3FF" stroke-width="2"/>
-                    <line x1="0" y1="30" x2="100" y2="30" stroke="#D1E3FF" stroke-width="2"/>
-                    <line x1="0" y1="50" x2="100" y2="50" stroke="#D1E3FF" stroke-width="2"/>
-                    <line x1="0" y1="70" x2="100" y2="70" stroke="#D1E3FF" stroke-width="2"/>
-                    <line x1="0" y1="90" x2="100" y2="90" stroke="#D1E3FF" stroke-width="2"/>
-                </svg>
-                <!-- Stain SVG -->
-                <svg id="stain-1" class="absolute w-24 h-24 text-brown-500 stain-animation" viewBox="0 0 100 100" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M50 0C77.6142 0 100 22.3858 100 50C100 77.6142 77.6142 100 50 100C22.3858 100 0 77.6142 0 50C0 22.3858 22.3858 0 50 0ZM45.8569 16.8519C49.8143 14.8055 54.1857 14.8055 58.1431 16.8519C62.1005 18.8983 65.1945 22.8426 66.8519 27.1481C68.8983 31.1055 68.8983 35.8945 66.8519 39.8519C65.1945 44.1574 62.1005 48.1017 58.1431 50.1481C54.1857 52.1945 49.8143 52.1945 45.8569 50.1481C41.8995 48.1017 38.8055 44.1574 37.1481 39.8519C35.1017 35.8945 35.1017 31.1055 37.1481 27.1481C38.8055 22.8426 41.8995 18.8983 45.8569 16.8519Z" transform="translate(-10, 20) scale(1.2)" fill="#78350F"/>
-                     <path d="M72.5 60.5C67.5 58.5 60 55 55 59C50 63 51 69 54.5 72.5C58 76 66 79.5 71 76C76 72.5 77.5 62.5 72.5 60.5Z" fill="#A16207"/>
-                </svg>
+                <!-- Dirty Shirt Image -->
+                <img id="shirt-image" src="baju-kotor.png" alt="Baju Kotor" class="w-full h-full object-cover rounded-lg">
             </div>
             <div class="bubble w-full max-w-sm mb-4">
                 <p class="text-gray-700 text-base">Kalau ada noda yang susah hilang, biasanya pakai apa ya?</p>
@@ -368,8 +351,7 @@
                      <!-- Fabric in bucket -->
                     <div id="fabric-in-bucket" class="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity">
                          <div class="relative w-24 h-24">
-                            <svg class="absolute w-full h-full opacity-50" viewBox="0 0 100 100" fill="#EBF4FF" xmlns="http://www.w3.org/2000/svg"><path d="M10,10 C40,0 60,0 90,10 L90,90 C60,100 40,100 10,90 Z"/></svg>
-                            <svg id="stain-2" class="absolute w-10 h-10 top-8 left-8 text-brown-500 stain-animation" viewBox="0 0 100 100" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M50 0C77.6142 0 100 22.3858 100 50C100 77.6142 77.6142 100 50 100C22.3858 100 0 77.6142 0 50C0 22.3858 22.3858 0 50 0Z" fill="#78350F"/></svg>
+                            <img id="shirt-in-bucket" src="baju-kotor.png" alt="Baju dalam ember" class="w-full h-full object-cover rounded opacity-50">
                         </div>
                     </div>
                      <!-- Bubbles -->
@@ -395,7 +377,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
                     </button>
                      <button id="action-sikat" onclick="startInteractiveWashing('sikat')" class="action-icon p-3 bg-white rounded-full shadow disabled:opacity-50" disabled>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" /></svg>
+                        <img src="sikat.png" alt="Sikat" class="h-6 w-6">
                     </button>
                 </div>
                 <div class="mt-2 text-center">
@@ -411,12 +393,14 @@
                 <h3 id="result-method" class="text-lg font-bold text-blue-600"></h3>
                 <p id="result-status" class="text-md font-semibold my-2"></p>
                 <div class="result-image w-full h-32 bg-gray-100 rounded my-3 flex items-center justify-center relative overflow-hidden">
-                    <svg class="absolute w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"> <rect width="100" height="100" fill="#EBF4FF"/> <line x1="10" y1="0" x2="10" y2="100" stroke="#D1E3FF" stroke-width="1"/><line x1="20" y1="0" x2="20" y2="100" stroke="#D1E3FF" stroke-width="1"/><line x1="30" y1="0" x2="30" y2="100" stroke="#D1E3FF" stroke-width="1"/><line x1="40" y1="0" x2="40" y2="100" stroke="#D1E3FF" stroke-width="1"/><line x1="50" y1="0" x2="50" y2="100" stroke="#D1E3FF" stroke-width="1"/><line x1="60" y1="0" x2="60" y2="100" stroke="#D1E3FF" stroke-width="1"/><line x1="70" y1="0" x2="70" y2="100" stroke="#D1E3FF" stroke-width="1"/><line x1="80" y1="0" x2="80" y2="100" stroke="#D1E3FF" stroke-width="1"/><line x1="90" y1="0" x2="90" y2="100" stroke="#D1E3FF" stroke-width="1"/> <line x1="0" y1="10" x2="100" y2="10" stroke="#D1E3FF" stroke-width="1"/><line x1="0" y1="20" x2="100" y2="20" stroke="#D1E3FF" stroke-width="1"/><line x1="0" y1="30" x2="100" y2="30" stroke="#D1E3FF" stroke-width="1"/><line x1="0" y1="40" x2="100" y2="40" stroke="#D1E3FF" stroke-width="1"/><line x1="0" y1="50" x2="100" y2="50" stroke="#D1E3FF" stroke-width="1"/><line x1="0" y1="60" x2="100" y2="60" stroke="#D1E3FF" stroke-width="1"/><line x1="0" y1="70" x2="100" y2="70" stroke="#D1E3FF" stroke-width="1"/><line x1="0" y1="80" x2="100" y2="80" stroke="#D1E3FF" stroke-width="1"/><line x1="0" y1="90" x2="100" y2="90" stroke="#D1E3FF" stroke-width="1"/> </svg>
-                    <svg id="result-stain" class="absolute w-16 h-16 text-brown-500 transition-opacity duration-500" viewBox="0 0 100 100" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M50 0C77.6142 0 100 22.3858 100 50C100 77.6142 77.6142 100 50 100C22.3858 100 0 77.6142 0 50C0 22.3858 22.3858 0 50 0Z" fill="#78350F" fill-opacity="0.5"/></svg>
+                    <img id="result-shirt" src="baju-kotor.png" alt="Hasil Cucian" class="w-full h-full object-cover rounded">
                 </div>
                 <p id="result-explanation" class="text-sm text-gray-600"></p>
             </div>
-            <button onclick="playSound('click'); showPage('page-8')" class="mt-6 btn bg-blue-500 text-white font-bold py-2 px-6 rounded-full shadow-lg">Lihat Kesimpulan</button>
+            <div class="mt-6 flex flex-col items-center gap-3">
+                <button id="retry-washing-btn" onclick="retryWashing()" class="btn bg-orange-500 text-white font-bold py-2 px-6 rounded-full shadow-lg" style="display: none;">Coba Mencuci Lagi</button>
+                <button onclick="playSound('click'); showPage('page-8')" class="btn bg-blue-500 text-white font-bold py-2 px-6 rounded-full shadow-lg">Lihat Kesimpulan</button>
+            </div>
         </div>
 
         <!-- Page 8: Summary -->
@@ -705,7 +689,7 @@
                     return;
                 }
                 
-                const bubbleText = ["Halo! Senang bertemu dengan Bapak/Ibu!", "Mari belajar cara praktis membersihkan noda!"];
+                const bubbleText = ["Halo! Senang bertemu dengan kalian!", "Mari belajar cara praktis membersihkan noda!"];
                 const sleep = (ms) => new Promise(res => setTimeout(res, ms));
 
                 const typeSentence = async (sentence) => {
@@ -829,7 +813,7 @@
                 showPage('page-5');
             } else {
                 playSound('wrong');
-                alert("Coba lagi! Pastikan Bapak/Ibu memilih Soda Kue dan Cuka Dapur di antara pilihan yang ada.");
+                alert("Pastikan Anda memilih bahan kimia yang ramah lingkungan.");
             }
         }
         
@@ -1095,11 +1079,14 @@
             washingProgress = Math.min(washingProgress + 2, 100);
             updateWashingProgress();
             
-            // Update stain opacity
-            const stain = document.getElementById('stain-2');
-            if (stain) {
-                let currentOpacity = parseFloat(stain.style.opacity) || 1.0;
-                stain.style.opacity = Math.max(currentOpacity - 0.01, 0.1);
+            // Update shirt image based on progress
+            const shirtInBucket = document.getElementById('shirt-in-bucket');
+            if (shirtInBucket) {
+                if (washingProgress >= 50) {
+                    // Change to cleaner shirt when progress is halfway
+                    shirtInBucket.src = 'baju-bersih.png';
+                    shirtInBucket.alt = 'Baju Sedang Dibersihkan';
+                }
             }
             
             // Create bubbles occasionally
@@ -1142,9 +1129,8 @@
             if (sikatBtn) sikatBtn.disabled = true;
             if (info) info.textContent = "Melihat hasil cucian...";
             
-            // Reset progress
-            washingProgress = 0;
-            updateWashingProgress();
+            // Don't reset progress here, keep it for result display
+            // washingProgress will be reset in retryWashing() or restartGame()
             
             setTimeout(() => showResult(currentExperiment), 1500);
         }
@@ -1209,8 +1195,9 @@
             const methodEl = document.getElementById('result-method');
             const statusEl = document.getElementById('result-status');
             const explanationEl = document.getElementById('result-explanation');
-            const stainEl = document.getElementById('result-stain');
+            const resultShirt = document.getElementById('result-shirt');
             const resultCard = document.getElementById('result-card');
+            const retryBtn = document.getElementById('retry-washing-btn');
             
             if (methodEl) methodEl.textContent = resultData.method;
             if (statusEl) {
@@ -1218,7 +1205,26 @@
                 statusEl.className = 'text-md font-semibold my-2 ' + (resultData.stainOpacity === 0 ? 'text-green-600' : 'text-red-500');
             }
             if (explanationEl) explanationEl.textContent = resultData.explanation;
-            if (stainEl) stainEl.style.opacity = resultData.stainOpacity;
+            
+            // Change shirt image based on result
+            if (resultShirt) {
+                if (resultData.stainOpacity === 0) {
+                    resultShirt.src = 'baju-bersih.png';
+                    resultShirt.alt = 'Baju Bersih';
+                } else {
+                    resultShirt.src = 'baju-kotor.png';
+                    resultShirt.alt = 'Baju Masih Kotor';
+                }
+            }
+            
+            // Show retry button only if result is not successful
+            if (retryBtn) {
+                if (resultData.stainOpacity === 0) {
+                    retryBtn.style.display = 'none';
+                } else {
+                    retryBtn.style.display = 'block';
+                }
+            }
             
             // Add animation based on result
             if (resultCard) {
@@ -1236,6 +1242,46 @@
             }
 
             showPage('page-7');
+        }
+
+        function retryWashing() {
+            playSound('click');
+            
+            // Reset washing state
+            actionCount = 0;
+            washingProgress = 0;
+            isWashing = false;
+            currentWashingMode = null;
+            
+            // Reset experiment visuals
+            const water = document.getElementById('water');
+            const fabric = document.getElementById('fabric-in-bucket');
+            const shirtInBucket = document.getElementById('shirt-in-bucket');
+            const info = document.getElementById('experiment-info');
+            const kucekBtn = document.getElementById('action-kucek');
+            const sikatBtn = document.getElementById('action-sikat');
+            const progressBar = document.getElementById('washing-progress-bar');
+            
+            if (water) water.style.height = '60px';
+            if (fabric) fabric.style.opacity = '1';
+            if (shirtInBucket) {
+                shirtInBucket.src = 'baju-kotor.png';
+                shirtInBucket.alt = 'Baju dalam ember';
+            }
+            if (info) info.textContent = "Sekarang kucek atau sikat nodanya!";
+            if (kucekBtn) kucekBtn.disabled = false;
+            if (sikatBtn) sikatBtn.disabled = false;
+            if (progressBar) progressBar.style.width = '0%';
+            
+            // Reset washing area
+            if (washingArea) {
+                washingArea.style.opacity = '0';
+                washingArea.style.pointerEvents = 'none';
+                washingArea.classList.remove('scrub-cursor', 'brush-cursor');
+            }
+            
+            // Go back to experiment page
+            showPage('page-6');
         }
 
         function restartGame() {
@@ -1259,18 +1305,32 @@
             // Reset experiment page
             const water = document.getElementById('water');
             const fabric = document.getElementById('fabric-in-bucket');
-            const stain = document.getElementById('stain-2');
+            const shirtInBucket = document.getElementById('shirt-in-bucket');
+            const resultShirt = document.getElementById('result-shirt');
             const info = document.getElementById('experiment-info');
             const kucekBtn = document.getElementById('action-kucek');
             const sikatBtn = document.getElementById('action-sikat');
             
             if (water) water.style.height = '0px';
             if (fabric) fabric.style.opacity = '0';
-            if (stain) stain.style.opacity = '1';
+            if (shirtInBucket) {
+                shirtInBucket.src = 'baju-kotor.png';
+                shirtInBucket.alt = 'Baju dalam ember';
+            }
+            if (resultShirt) {
+                resultShirt.src = 'baju-kotor.png';
+                resultShirt.alt = 'Hasil Cucian';
+            }
             if (info) info.textContent = '';
             if (kucekBtn) kucekBtn.disabled = true;
             if (sikatBtn) sikatBtn.disabled = true;
             document.querySelectorAll('#page-6 .option-btn').forEach(b => b.classList.remove('selected'));
+            
+            // Hide retry button
+            const retryBtn = document.getElementById('retry-washing-btn');
+            if (retryBtn) {
+                retryBtn.style.display = 'none';
+            }
             
             // Reset to first page and restart intro sequence
             showPage('page-1');
