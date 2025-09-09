@@ -45,16 +45,26 @@ function doPost(e) {
     }
 
     // 2. Tentukan Spreadsheet dan Sheet tujuan
+    // Ganti ID_SPREADSHEET_ANDA dengan ID spreadsheet yang benar
+    // const spreadsheet = SpreadsheetApp.openById('ID_SPREADSHEET_ANDA');
     const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+    Logger.log('Active spreadsheet ID: ' + spreadsheet.getId());
+    Logger.log('Spreadsheet name: ' + spreadsheet.getName());
+    
     let sheet = spreadsheet.getSheetByName("Jawaban");
+    Logger.log('Sheet "Jawaban" exists: ' + (sheet !== null));
 
     if (!sheet) {
+      Logger.log('Creating new sheet "Jawaban"');
       sheet = spreadsheet.insertSheet("Jawaban");
       // Buat header jika sheet baru dibuat
       const headers = ["Timestamp", "nama_pengisi", "q1", "q2", "q3", "q4", "q5"];
       sheet.appendRow(headers);
       Logger.log('Created new sheet with headers');
     }
+    
+    Logger.log('Using sheet: ' + sheet.getName());
+    Logger.log('Sheet has ' + sheet.getLastRow() + ' rows');
     
     // 3. Siapkan baris data untuk dimasukkan ke sheet
     const newRow = [
@@ -70,8 +80,20 @@ function doPost(e) {
     Logger.log('New row to insert: ' + JSON.stringify(newRow));
 
     // 4. Tambahkan baris baru ke dalam sheet
-    sheet.appendRow(newRow);
-    Logger.log('Data successfully inserted to sheet');
+    try {
+      sheet.appendRow(newRow);
+      Logger.log('Data successfully inserted to sheet');
+      Logger.log('Sheet now has ' + sheet.getLastRow() + ' rows');
+      
+      // Verifikasi data yang baru ditambahkan
+      const lastRow = sheet.getLastRow();
+      const lastRowData = sheet.getRange(lastRow, 1, 1, 7).getValues()[0];
+      Logger.log('Last row data: ' + JSON.stringify(lastRowData));
+      
+    } catch (appendError) {
+      Logger.log('Error appending row: ' + appendError.toString());
+      throw appendError;
+    }
 
     // 5. Kirim respon sukses
     return ContentService
@@ -129,4 +151,39 @@ function testDoPost() {
   
   const result = doPost(mockEvent);
   Logger.log('Test result: ' + result.getContent());
+}
+
+/**
+ * @description Fungsi untuk memeriksa spreadsheet dan sheet
+ */
+function checkSpreadsheet() {
+  try {
+    const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+    Logger.log('Active spreadsheet ID: ' + spreadsheet.getId());
+    Logger.log('Spreadsheet name: ' + spreadsheet.getName());
+    Logger.log('Spreadsheet URL: ' + spreadsheet.getUrl());
+    
+    const sheets = spreadsheet.getSheets();
+    Logger.log('Available sheets:');
+    sheets.forEach((sheet, index) => {
+      Logger.log(`  ${index + 1}. ${sheet.getName()} (${sheet.getLastRow()} rows)`);
+    });
+    
+    let jawabanSheet = spreadsheet.getSheetByName("Jawaban");
+    if (jawabanSheet) {
+      Logger.log('Jawaban sheet found with ' + jawabanSheet.getLastRow() + ' rows');
+      if (jawabanSheet.getLastRow() > 0) {
+        const data = jawabanSheet.getDataRange().getValues();
+        Logger.log('Sample data from Jawaban sheet:');
+        data.slice(0, 3).forEach((row, index) => {
+          Logger.log(`  Row ${index + 1}: ${JSON.stringify(row)}`);
+        });
+      }
+    } else {
+      Logger.log('Jawaban sheet not found');
+    }
+    
+  } catch (error) {
+    Logger.log('Error checking spreadsheet: ' + error.toString());
+  }
 }
