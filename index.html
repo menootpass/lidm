@@ -12,13 +12,19 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #F0F4F8; /* Neutral background */
+            background-image: url('bg-ingame.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
         }
         .game-container {
             max-width: 420px;
             height: 100vh;
             max-height: 800px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
         }
         .page {
             display: none;
@@ -28,28 +34,34 @@
         }
         .btn {
             transition: all 0.2s ease-in-out;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         .option-btn {
-            border: 2px solid #D9E2EC;
+            border: 2px solid rgba(217, 226, 236, 0.8);
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.9);
         }
         .option-btn:hover {
             border-color: #60A5FA; /* Blue accent */
-            background-color: #EFF6FF;
+            background-color: rgba(239, 246, 255, 0.9);
         }
         .option-btn.selected {
             border-color: #34D399; /* Green accent */
-            background-color: #F0FDF4;
+            background-color: rgba(240, 253, 244, 0.9);
         }
         .bubble {
-            background-color: white;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 16px;
             position: relative;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         .bubble::after {
             content: '';
@@ -59,10 +71,58 @@
             width: 0;
             height: 0;
             border: 15px solid transparent;
-            border-top-color: white;
+            border-top-color: rgba(255, 255, 255, 0.9);
             border-bottom: 0;
             margin-left: -15px;
             margin-bottom: -15px;
+        }
+        .result-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 300px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .experiment-area {
+            background: rgba(248, 250, 252, 0.9);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(226, 232, 240, 0.8);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+            min-height: 200px;
+        }
+        .draggable-ingredient {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            user-select: none;
+        }
+        .draggable-ingredient:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+        .draggable-ingredient.dragging {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+        }
+        .drop-zone-active {
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
+        .drop-zone-highlight {
+            border-color: #3B82F6 !important;
+            background-color: rgba(59, 130, 246, 0.2) !important;
+            animation: pulse 1s infinite;
+        }
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+            80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
         }
         .stain-animation {
             transition: opacity 1.5s ease-out;
@@ -266,26 +326,24 @@
                 <img src="maskot.png" alt="Maskot" class="w-[150px] h-[150px] rounded-full object-cover shadow-md">
             </div>
             <div class="bubble w-full max-w-sm">
-                <p id="bubble-text-1" class="text-gray-700 text-lg">Halo! Senang bertemu dengan Bapak/Ibu!</p>
+                <p id="bubble-text-1" class="text-gray-700 text-lg">Halo! Senang bertemu dengan Kalian!</p>
             </div>
             <!-- Fallback button if auto doesn't work -->
             <button id="manual-start" onclick="showPage('page-2')" class="mt-4 btn bg-blue-500 text-white font-bold py-2 px-6 rounded-full shadow-lg" style="display: none;">Mulai Game</button>
         </div>
 
-        <!-- Page 2: Intro 2 -->
-        <div id="page-2" class="page flex-col justify-center items-center h-full p-8 text-center">
-            <div class="character-container mb-6">
-                <img src="maskot.png" alt="Maskot" class="w-[150px] h-[150px] rounded-full object-cover shadow-md">
-            </div>
-            <div class="bubble w-full max-w-sm mb-8">
-                <p class="text-gray-700 text-lg">Mari kita coba cara membersihkan noda yang mudah!</p>
-            </div>
-            <button onclick="playSound('click'); showPage('page-3')" class="btn bg-blue-500 text-white font-bold py-3 px-8 rounded-full shadow-lg">Baik, mari kita mulai!</button>
-        </div>
+        <!-- Undo Button -->
+        <button id="undo-btn" onclick="undoPage()" class="fixed top-4 left-4 z-50 bg-gray-500/80 hover:bg-gray-600/80 backdrop-blur-md text-white p-3 rounded-full shadow-lg transition-all duration-200 opacity-0 pointer-events-none border border-white/20">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+        </button>
 
-        <!-- Page 3: Question 1 -->
+        
+
+        <!-- Page 2: Question 1 -->
         <div id="page-3" class="page flex-col justify-center items-center h-full p-8 text-center">
-            <div class="character-container mb-6">
+             <div class="character-container mb-6">
                 <img src="maskot.png" alt="Maskot" class="w-[150px] h-[150px] rounded-full object-cover shadow-md">
             </div>
             <div class="board bg-white p-6 rounded-lg shadow-md w-full max-w-sm mb-6">
@@ -297,7 +355,7 @@
             </div>
         </div>
         
-        <!-- Page 4: Question 2 -->
+        <!-- Page 3: Question 2 -->
         <div id="page-4" class="page flex-col justify-center items-center h-full p-6 text-center">
              <div class="image-container bg-gray-200 rounded-lg w-64 h-64 mb-4 flex items-center justify-center relative overflow-hidden">
                 <!-- Dirty Shirt Image -->
@@ -322,6 +380,8 @@
             </div>
         </div>
 
+        
+
         <!-- Page 5: Info -->
         <div id="page-5" class="page flex-col justify-center items-center h-full p-8 text-center bg-blue-50">
              <div class="icon-container mb-4 text-green-500">
@@ -333,6 +393,17 @@
                 <p class="text-gray-600 mt-2"><strong class="text-green-600">Cuka Dapur</strong> bisa melarutkan kotoran yang menempel dan bekerja sama dengan soda kue.</p>
             </div>
             <button onclick="playSound('click'); showPage('page-6')" class="mt-8 btn bg-blue-500 text-white font-bold py-3 px-8 rounded-full shadow-lg">Mari kita coba praktik!</button>
+        </div>
+
+        <!-- Page 4: Intro 2 -->
+        <div id="page-2" class="page flex-col justify-center items-center h-full p-8 text-center">
+            <div class="character-container mb-6">
+                <img src="maskot.png" alt="Maskot" class="w-[150px] h-[150px] rounded-full object-cover shadow-md">
+            </div>
+            <div class="bubble w-full max-w-sm mb-8">
+                <p class="text-gray-700 text-lg">Mari kita coba cara membersihkan noda yang mudah!</p>
+            </div>
+            <button onclick="playSound('click'); showPage('page-3')" class="btn bg-blue-500 text-white font-bold py-3 px-8 rounded-full shadow-lg">Baik, mari kita mulai!</button>
         </div>
         
         <!-- Page 6: Experiment -->
@@ -357,6 +428,20 @@
                      <!-- Bubbles -->
                     <div id="bubbles" class="absolute bottom-[13px] left-[22px] w-[56px] h-0 opacity-0 transition-all duration-1000"></div>
                     
+                    <!-- Washing Ingredients -->
+                    <div id="washing-ingredients" class="absolute top-2 right-2 flex flex-col gap-2 opacity-0 transition-opacity duration-500">
+                        <img id="ingredient-1" src="" alt="" class="draggable-ingredient w-12 h-12 object-cover rounded shadow-lg cursor-grab active:cursor-grabbing" draggable="true">
+                        <img id="ingredient-2" src="" alt="" class="draggable-ingredient w-12 h-12 object-cover rounded shadow-lg cursor-grab active:cursor-grabbing" draggable="true">
+                        <img id="ingredient-3" src="" alt="" class="draggable-ingredient w-12 h-12 object-cover rounded shadow-lg cursor-grab active:cursor-grabbing" draggable="true">
+                    </div>
+                    
+                    <!-- Drop Zone for Ingredients -->
+                    <div id="ingredient-drop-zone" class="absolute inset-0 pointer-events-none">
+                        <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-20 h-20 border-2 border-dashed border-blue-400 rounded-lg bg-blue-100/50 opacity-0 transition-opacity duration-300">
+                            <div class="flex items-center justify-center h-full text-blue-600 text-xs font-semibold">Tarik ke sini</div>
+                        </div>
+                    </div>
+                    
                     <!-- Interactive Washing Area -->
                     <div id="washing-area" class="washing-area absolute inset-0 opacity-0 pointer-events-none">
                         <div class="washing-progress">
@@ -370,7 +455,7 @@
                 <div class="grid grid-cols-3 gap-2 mb-3">
                      <button onclick="runExperiment('deterjen')" class="option-btn text-xs bg-white text-gray-700 font-semibold p-2 rounded-lg text-center">Pakai<br>Deterjen Saja</button>
                      <button onclick="runExperiment('baking_soda_cuka')" class="option-btn text-xs bg-white text-gray-700 font-semibold p-2 rounded-lg text-center">Pakai<br>Soda Kue + Cuka</button>
-                     <button onclick="runExperiment('semua')" class="option-btn text-xs bg-white text-gray-700 font-semibold p-2 rounded-lg text-center">Pakai<br>Semua Bahan</button>
+                     <button onclick="runExperiment('semua')" class="option-btn text-xs bg-white text-gray-700 font-semibold p-2 rounded-lg text-center">Pakai<br>Detergen + Soda Kue + Cuka</button>
                 </div>
                 <div class="extra-actions flex justify-center gap-4">
                     <button id="action-kucek" onclick="startInteractiveWashing('kucek')" class="action-icon p-3 bg-white rounded-full shadow disabled:opacity-50" disabled>
@@ -389,7 +474,7 @@
         <!-- Page 7: Results -->
         <div id="page-7" class="page flex-col justify-center items-center h-full p-6 bg-gray-50">
             <h2 class="text-2xl font-bold text-center text-gray-800 mb-4">Hasil Eksperimen</h2>
-            <div id="result-card" class="bg-white p-5 rounded-lg shadow-lg w-full max-w-sm">
+            <div id="result-card" class="result-card p-5 w-full max-w-sm">
                 <h3 id="result-method" class="text-lg font-bold text-blue-600"></h3>
                 <p id="result-status" class="text-md font-semibold my-2"></p>
                 <div class="result-image w-full h-32 bg-gray-100 rounded my-3 flex items-center justify-center relative overflow-hidden">
@@ -399,7 +484,9 @@
             </div>
             <div class="mt-6 flex flex-col items-center gap-3">
                 <button id="retry-washing-btn" onclick="retryWashing()" class="btn bg-orange-500 text-white font-bold py-2 px-6 rounded-full shadow-lg" style="display: none;">Coba Mencuci Lagi</button>
-                <button onclick="playSound('click'); showPage('page-8')" class="btn bg-blue-500 text-white font-bold py-2 px-6 rounded-full shadow-lg">Lihat Kesimpulan</button>
+                <button id="conclusion-btn" onclick="playSound('click'); showPage('page-8')" class="btn bg-gray-400 text-white font-bold py-2 px-6 rounded-full shadow-lg opacity-50 cursor-not-allowed" disabled>
+                    Pilih Metode Mencuci Terlebih Dahulu
+                </button>
             </div>
         </div>
 
@@ -441,13 +528,15 @@
     <script>
         let currentPage = 'page-1';
         let selectedAnswersQ2 = [];
+        let pageHistory = ['page-1']; // Track page navigation history
         let synth;
         let gameProgress = {
             currentPage: 'page-1',
             selectedAnswersQ2: [],
             currentExperiment: null,
             actionCount: 0,
-            hasCompletedIntro: false
+            hasCompletedIntro: false,
+            pageHistory: ['page-1']
         };
 
 
@@ -525,6 +614,7 @@
                     selectedAnswersQ2 = gameProgress.selectedAnswersQ2 || [];
                     currentExperiment = gameProgress.currentExperiment;
                     actionCount = gameProgress.actionCount || 0;
+                    pageHistory = gameProgress.pageHistory || ['page-1'];
                     return true;
                 } catch (e) {
                     console.error('Error loading progress:', e);
@@ -540,8 +630,10 @@
                 selectedAnswersQ2: [],
                 currentExperiment: null,
                 actionCount: 0,
-                hasCompletedIntro: false
+                hasCompletedIntro: false,
+                pageHistory: ['page-1']
             };
+            pageHistory = ['page-1'];
         }
 
         // --- Page Navigation ---
@@ -558,6 +650,15 @@
             if (targetPage) {
                 targetPage.classList.add('active');
                 currentPage = pageId;
+                
+                // Add to history if not already the current page
+                if (pageHistory[pageHistory.length - 1] !== pageId) {
+                    pageHistory.push(pageId);
+                    gameProgress.pageHistory = [...pageHistory];
+                }
+                
+                // Update undo button visibility
+                updateUndoButton();
                 
                 // Initialize counter when showing page 4
                 if (pageId === 'page-4') {
@@ -675,6 +776,9 @@
                 if (kucekBtn) kucekBtn.disabled = false;
                 if (sikatBtn) sikatBtn.disabled = false;
             }
+            
+            // Update undo button visibility
+            updateUndoButton();
         }
 
         // Typing effect for intro
@@ -831,9 +935,9 @@
                 stainOpacity: 0.6
             },
             semua: {
-                method: "Pakai Semua Bahan",
+                method: "Pakai Cuka Soda Kue Detergen",
                 result: "Noda hilang bersih!",
-                explanation: "Kombinasi terbaik! Soda kue dan cuka dapur membuat gelembung yang membantu mengangkat kotoran, sementara deterjen mengikat dan membawa kotoran keluar dari kain.",
+                explanation: "Kombinasi terbaik! Soda kue dan cuka dapur membuat gelembung yang membantu mengangkat kotoran, sementara Detergen mengikat dan membawa kotoran keluar dari kain.",
                 stainOpacity: 0
             }
         }
@@ -851,6 +955,9 @@
             currentExperiment = method;
             actionCount = 0; // Reset action count for new experiment
             
+            // Enable conclusion button only for correct method (semua)
+            updateConclusionButton(method === 'semua');
+            
             // Save progress
             saveProgress();
             
@@ -858,6 +965,13 @@
             const water = document.getElementById('water');
             const fabric = document.getElementById('fabric-in-bucket');
             const bubbles = document.getElementById('bubbles');
+            const ingredients = document.getElementById('washing-ingredients');
+            const ingredient1 = document.getElementById('ingredient-1');
+            const ingredient2 = document.getElementById('ingredient-2');
+            const ingredient3 = document.getElementById('ingredient-3');
+            
+            // Show ingredients based on method
+            showWashingIngredients(method);
             
             if (info) info.textContent = "Masukkan kain dan bahan ke dalam ember...";
             if (water) water.style.height = '0px';
@@ -872,18 +986,356 @@
                 if (fabric) fabric.style.opacity = '1';
                 if (info) info.textContent = "Bahan sudah dicampur dengan air.";
                 
+                // Show ingredients
+                if (ingredients) ingredients.style.opacity = '1';
+                
                 // Create initial bubbles when mixing
                 createBubbles();
                 createSplash();
             }, 500);
 
             setTimeout(() => {
-                if (info) info.textContent = "Sekarang kucek atau sikat nodanya!";
+                if (info) info.textContent = "Tarik bahan ke dalam ember terlebih dahulu!";
+                const kucekBtn = document.getElementById('action-kucek');
+                const sikatBtn = document.getElementById('action-sikat');
+                if (kucekBtn) kucekBtn.disabled = true;
+                if (sikatBtn) sikatBtn.disabled = true;
+            }, 2000);
+        }
+        
+        function showWashingIngredients(method) {
+            const ingredient1 = document.getElementById('ingredient-1');
+            const ingredient2 = document.getElementById('ingredient-2');
+            const ingredient3 = document.getElementById('ingredient-3');
+            
+            // Hide all ingredients first
+            if (ingredient1) ingredient1.style.display = 'none';
+            if (ingredient2) ingredient2.style.display = 'none';
+            if (ingredient3) ingredient3.style.display = 'none';
+            
+            // Reset ingredients in bucket
+            ingredientsInBucket = [];
+            
+            switch(method) {
+                case 'deterjen':
+                    if (ingredient1) {
+                        ingredient1.src = 'sabun.png';
+                        ingredient1.alt = 'Sabun';
+                        ingredient1.style.display = 'block';
+                        ingredient1.dataset.ingredientType = 'sabun';
+                    }
+                    break;
+                    
+                case 'baking_soda_cuka':
+                    if (ingredient1) {
+                        ingredient1.src = 'bsoda.png';
+                        ingredient1.alt = 'Baking Soda';
+                        ingredient1.style.display = 'block';
+                        ingredient1.dataset.ingredientType = 'bsoda';
+                    }
+                    if (ingredient2) {
+                        ingredient2.src = 'cuka.png';
+                        ingredient2.alt = 'Cuka';
+                        ingredient2.style.display = 'block';
+                        ingredient2.dataset.ingredientType = 'cuka';
+                    }
+                    break;
+                    
+                case 'semua':
+                    if (ingredient1) {
+                        ingredient1.src = 'sabun.png';
+                        ingredient1.alt = 'Sabun';
+                        ingredient1.style.display = 'block';
+                        ingredient1.dataset.ingredientType = 'sabun';
+                    }
+                    if (ingredient2) {
+                        ingredient2.src = 'bsoda.png';
+                        ingredient2.alt = 'Baking Soda';
+                        ingredient2.style.display = 'block';
+                        ingredient2.dataset.ingredientType = 'bsoda';
+                    }
+                    if (ingredient3) {
+                        ingredient3.src = 'cuka.png';
+                        ingredient3.alt = 'Cuka';
+                        ingredient3.style.display = 'block';
+                        ingredient3.dataset.ingredientType = 'cuka';
+                    }
+                    break;
+            }
+            
+            // Setup drag and drop
+            setupDragAndDrop();
+        }
+        
+        function setupDragAndDrop() {
+            const ingredients = document.querySelectorAll('.draggable-ingredient');
+            dropZone = document.querySelector('#ingredient-drop-zone .absolute');
+            
+            ingredients.forEach(ingredient => {
+                // Remove existing listeners
+                ingredient.removeEventListener('dragstart', handleDragStart);
+                ingredient.removeEventListener('dragend', handleDragEnd);
+                ingredient.removeEventListener('touchstart', handleTouchStart);
+                ingredient.removeEventListener('touchmove', handleTouchMove);
+                ingredient.removeEventListener('touchend', handleTouchEnd);
+                
+                // Add new listeners
+                ingredient.addEventListener('dragstart', handleDragStart);
+                ingredient.addEventListener('dragend', handleDragEnd);
+                ingredient.addEventListener('touchstart', handleTouchStart);
+                ingredient.addEventListener('touchmove', handleTouchMove);
+                ingredient.addEventListener('touchend', handleTouchEnd);
+            });
+            
+            if (dropZone) {
+                dropZone.removeEventListener('dragover', handleDragOver);
+                dropZone.removeEventListener('drop', handleDrop);
+                dropZone.removeEventListener('dragenter', handleDragEnter);
+                dropZone.removeEventListener('dragleave', handleDragLeave);
+                
+                dropZone.addEventListener('dragover', handleDragOver);
+                dropZone.addEventListener('drop', handleDrop);
+                dropZone.addEventListener('dragenter', handleDragEnter);
+                dropZone.addEventListener('dragleave', handleDragLeave);
+            }
+        }
+        
+        function handleDragStart(e) {
+            draggedIngredient = e.target;
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', e.target.outerHTML);
+            
+            // Show drop zone
+            if (dropZone) {
+                dropZone.classList.add('drop-zone-active');
+            }
+        }
+        
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            draggedIngredient = null;
+            
+            // Hide drop zone
+            if (dropZone) {
+                dropZone.classList.remove('drop-zone-active', 'drop-zone-highlight');
+            }
+        }
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+        
+        function handleDragEnter(e) {
+            e.preventDefault();
+            if (dropZone) {
+                dropZone.classList.add('drop-zone-highlight');
+            }
+        }
+        
+        function handleDragLeave(e) {
+            if (dropZone && !dropZone.contains(e.relatedTarget)) {
+                dropZone.classList.remove('drop-zone-highlight');
+            }
+        }
+        
+        function handleDrop(e) {
+            e.preventDefault();
+            
+            if (dropZone) {
+                dropZone.classList.remove('drop-zone-highlight');
+            }
+            
+            if (draggedIngredient) {
+                const ingredientType = draggedIngredient.dataset.ingredientType;
+                
+                // Check if ingredient is already in bucket
+                if (!ingredientsInBucket.includes(ingredientType)) {
+                    ingredientsInBucket.push(ingredientType);
+                    
+                    // Hide the dragged ingredient
+                    draggedIngredient.style.opacity = '0.3';
+                    draggedIngredient.style.pointerEvents = 'none';
+                    
+                    // Play sound
+                    playSound('mix');
+                    
+                    // Show success feedback
+                    showIngredientAdded(ingredientType);
+                    
+                    // Check if all ingredients are added
+                    checkAllIngredientsAdded();
+                }
+            }
+        }
+        
+        function handleTouchStart(e) {
+            e.preventDefault();
+            draggedIngredient = e.target;
+            e.target.classList.add('dragging');
+        }
+        
+        function handleTouchMove(e) {
+            e.preventDefault();
+            if (draggedIngredient) {
+                const touch = e.touches[0];
+                const rect = draggedIngredient.getBoundingClientRect();
+                draggedIngredient.style.position = 'fixed';
+                draggedIngredient.style.left = (touch.clientX - rect.width / 2) + 'px';
+                draggedIngredient.style.top = (touch.clientY - rect.height / 2) + 'px';
+                draggedIngredient.style.zIndex = '1000';
+                
+                // Show drop zone
+                if (dropZone) {
+                    dropZone.classList.add('drop-zone-active');
+                }
+            }
+        }
+        
+        function handleTouchEnd(e) {
+            if (draggedIngredient) {
+                const touch = e.changedTouches[0];
+                const dropZoneRect = dropZone.getBoundingClientRect();
+                
+                // Check if dropped on drop zone
+                if (touch.clientX >= dropZoneRect.left && 
+                    touch.clientX <= dropZoneRect.right && 
+                    touch.clientY >= dropZoneRect.top && 
+                    touch.clientY <= dropZoneRect.bottom) {
+                    
+                    const ingredientType = draggedIngredient.dataset.ingredientType;
+                    
+                    if (!ingredientsInBucket.includes(ingredientType)) {
+                        ingredientsInBucket.push(ingredientType);
+                        draggedIngredient.style.opacity = '0.3';
+                        draggedIngredient.style.pointerEvents = 'none';
+                        playSound('mix');
+                        showIngredientAdded(ingredientType);
+                        checkAllIngredientsAdded();
+                    }
+                }
+                
+                // Reset position
+                draggedIngredient.style.position = '';
+                draggedIngredient.style.left = '';
+                draggedIngredient.style.top = '';
+                draggedIngredient.style.zIndex = '';
+                draggedIngredient.classList.remove('dragging');
+                
+                if (dropZone) {
+                    dropZone.classList.remove('drop-zone-active', 'drop-zone-highlight');
+                }
+                
+                draggedIngredient = null;
+            }
+        }
+        
+        function showIngredientAdded(ingredientType) {
+            const ingredientNames = {
+                'sabun': 'Sabun',
+                'bsoda': 'Soda Kue',
+                'cuka': 'Cuka'
+            };
+            
+            // Create temporary feedback
+            const feedback = document.createElement('div');
+            feedback.textContent = `${ingredientNames[ingredientType]} ditambahkan!`;
+            feedback.className = 'absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-green-500 text-white px-4 py-2 rounded-full text-sm font-semibold z-50';
+            feedback.style.animation = 'fadeInOut 2s ease-in-out';
+            
+            const experimentArea = document.querySelector('.experiment-area');
+            if (experimentArea) {
+                experimentArea.appendChild(feedback);
+                setTimeout(() => feedback.remove(), 2000);
+            }
+        }
+        
+        function checkAllIngredientsAdded() {
+            const requiredIngredients = getRequiredIngredients();
+            const allAdded = requiredIngredients.every(ingredient => 
+                ingredientsInBucket.includes(ingredient)
+            );
+            
+            if (allAdded) {
+                // Enable washing buttons
                 const kucekBtn = document.getElementById('action-kucek');
                 const sikatBtn = document.getElementById('action-sikat');
                 if (kucekBtn) kucekBtn.disabled = false;
                 if (sikatBtn) sikatBtn.disabled = false;
-            }, 2000);
+                
+                // Update instruction
+                const info = document.getElementById('experiment-info');
+                if (info) info.textContent = "Semua bahan sudah ditambahkan! Sekarang kucek atau sikat nodanya!";
+                
+                // Hide drop zone
+                if (dropZone) {
+                    dropZone.classList.remove('drop-zone-active');
+                }
+            }
+        }
+        
+        function getRequiredIngredients() {
+            switch(currentExperiment) {
+                case 'deterjen':
+                    return ['sabun'];
+                case 'baking_soda_cuka':
+                    return ['bsoda', 'cuka'];
+                case 'semua':
+                    return ['sabun', 'bsoda', 'cuka'];
+                default:
+                    return [];
+            }
+        }
+        
+        function updateConclusionButton(isEnabled) {
+            const conclusionBtn = document.getElementById('conclusion-btn');
+            if (!conclusionBtn) return;
+            
+            if (isEnabled) {
+                // Enable button
+                conclusionBtn.disabled = false;
+                conclusionBtn.classList.remove('bg-gray-400', 'opacity-50', 'cursor-not-allowed');
+                conclusionBtn.classList.add('bg-blue-500', 'hover:bg-blue-600');
+                conclusionBtn.textContent = 'Lihat Kesimpulan';
+            } else {
+                // Disable button
+                conclusionBtn.disabled = true;
+                conclusionBtn.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                conclusionBtn.classList.add('bg-gray-400', 'opacity-50', 'cursor-not-allowed');
+                conclusionBtn.textContent = 'Pilih Metode Mencuci Terlebih Dahulu';
+            }
+        }
+        
+        function updateUndoButton() {
+            const undoBtn = document.getElementById('undo-btn');
+            if (!undoBtn) return;
+            
+            // Show undo button if there's more than one page in history
+            if (pageHistory.length > 1) {
+                undoBtn.classList.remove('opacity-0', 'pointer-events-none');
+                undoBtn.classList.add('opacity-100', 'pointer-events-auto');
+            } else {
+                undoBtn.classList.add('opacity-0', 'pointer-events-none');
+                undoBtn.classList.remove('opacity-100', 'pointer-events-auto');
+            }
+        }
+        
+        function undoPage() {
+            playSound('click');
+            
+            // Don't undo if we're at the first page
+            if (pageHistory.length <= 1) return;
+            
+            // Remove current page from history
+            pageHistory.pop();
+            gameProgress.pageHistory = [...pageHistory];
+            
+            // Go to previous page
+            const previousPage = pageHistory[pageHistory.length - 1];
+            if (previousPage) {
+                showPage(previousPage);
+            }
         }
 
         let actionCount = 0;
@@ -892,6 +1344,9 @@
         let washingProgress = 0;
         let isWashing = false;
         let washingArea = null;
+        let draggedIngredient = null;
+        let ingredientsInBucket = [];
+        let dropZone = null;
         
         function createBubbles() {
             const bucket = document.querySelector('.relative.w-48.h-48');
@@ -1261,6 +1716,7 @@
             const kucekBtn = document.getElementById('action-kucek');
             const sikatBtn = document.getElementById('action-sikat');
             const progressBar = document.getElementById('washing-progress-bar');
+            const ingredients = document.getElementById('washing-ingredients');
             
             if (water) water.style.height = '60px';
             if (fabric) fabric.style.opacity = '1';
@@ -1272,6 +1728,20 @@
             if (kucekBtn) kucekBtn.disabled = false;
             if (sikatBtn) sikatBtn.disabled = false;
             if (progressBar) progressBar.style.width = '0%';
+            
+            // Show ingredients again
+            if (ingredients) ingredients.style.opacity = '1';
+            
+            // Reset drag and drop
+            ingredientsInBucket = [];
+            const ingredientElements = document.querySelectorAll('.draggable-ingredient');
+            ingredientElements.forEach(ingredient => {
+                ingredient.style.opacity = '1';
+                ingredient.style.pointerEvents = 'auto';
+            });
+            
+            // Reset conclusion button
+            updateConclusionButton(currentExperiment === 'semua');
             
             // Reset washing area
             if (washingArea) {
@@ -1331,6 +1801,23 @@
             if (retryBtn) {
                 retryBtn.style.display = 'none';
             }
+            
+            // Hide ingredients
+            const ingredients = document.getElementById('washing-ingredients');
+            if (ingredients) {
+                ingredients.style.opacity = '0';
+            }
+            
+            // Reset conclusion button
+            updateConclusionButton(false);
+            
+            // Reset page history
+            pageHistory = ['page-1'];
+            gameProgress.pageHistory = ['page-1'];
+            
+            // Reset drag and drop
+            ingredientsInBucket = [];
+            draggedIngredient = null;
             
             // Reset to first page and restart intro sequence
             showPage('page-1');
